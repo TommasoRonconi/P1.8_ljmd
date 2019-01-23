@@ -1,11 +1,15 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
+
 CC=gcc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
+
+dirI=../include
+
+CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
 LDLIBS=-lm
 
 # list of source files
-SRC=ljmd.c
+SRC=ljmd.c 
 VPATH=../src
 OBJ=$(SRC:%.c=%.o)
 
@@ -19,7 +23,7 @@ clean:
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
-%.o: %.c
+%.o: %.c $(dirI)/data_structure.h
 	$(CC) -c $(CFLAGS) $<
 
 # dependencies
