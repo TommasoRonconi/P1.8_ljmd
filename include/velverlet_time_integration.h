@@ -2,7 +2,7 @@
 #define __VELVERLET__
 
 #include <data_structure.h>
-// #include <compute_force.h>
+#include <utilities.h>
 
 /* velocity verlet */
 static void velverlet_first_half(mdsys_t *sys);
