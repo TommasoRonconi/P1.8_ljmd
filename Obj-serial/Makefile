@@ -30,6 +30,11 @@ $(exe_name): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
+<<<<<<< HEAD
+=======
+%.o: %.c $(dirI)/input.h $(dirI)/output.h 
+	$(CC) -c $(CFLAGS) $<
+>>>>>>> origin/output
 
 # general rule
 

@@ -3,8 +3,9 @@
 
 /* structure to hold the complete information 
  * about the MD system */
-struct _mdsys {
-    int natoms,nfi,nsteps;
+struct _mdsys
+{
+    int natoms, nfi, nsteps;
     double dt, mass, epsilon, sigma, box, rcut;
     double ekin, epot, temp;
     double *rx, *ry, *rz;
@@ -14,4 +15,8 @@ struct _mdsys {
 
 typedef struct _mdsys mdsys_t;
 
+<<<<<<< HEAD
 #endif //__DATA_STRUCTURE__
+=======
+#endif //__DATA_STRUCTURE__
+>>>>>>> origin/output
