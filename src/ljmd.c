@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include <compute_force.h>
 
 /* generic file- or pathname buffer length */
 #define BLEN 200

@@ -1,7 +1,11 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
+
 CC=gcc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
+
+dirI=../include
+
+CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
 LDLIBS=-lm
 
 # list of source files
@@ -19,7 +23,7 @@ clean:
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
-%.o: %.c
+%.o: %.c $(dirI)/compute_force.h
 	$(CC) -c $(CFLAGS) $<
 
 # dependencies
