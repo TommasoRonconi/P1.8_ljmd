@@ -250,12 +250,11 @@ int main(int argc, char **argv)
         if ((sys.nfi % nprint) == 0)
             output(&sys, erg, traj);
 
-        /* propagate system and recompute energies by one half step*/  
-        velverlet_first_half(&sys);
- 	    /* compute forces and potential energy */
-    	force(sys);
-        /* propagate system and recompute energies by another half step*/  
-        velverlet_second_half(&sys);
+        
+        velverlet_first_half(&sys); /* propagate system and recompute energies by one half step*/  
+    	force(sys); /* compute forces and potential energy */
+        velverlet_second_half(&sys); /* propagate system and recompute energies by another half step*/  
+        
         ekin(&sys);
     }
     /**************************************************/
