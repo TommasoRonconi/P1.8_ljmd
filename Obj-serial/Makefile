@@ -23,7 +23,7 @@ clean:
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
-%.o: %.c $(dirI)/verlet_first.h
+%.o: %.c $(dirI)/velverlet_time_integration.h
 	$(CC) -c $(CFLAGS) $<
 
 # dependencies

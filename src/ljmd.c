@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
-#include <velverlet_first.h>
+#include <velverlet_time_integration.h>
 
 /* generic file- or pathname buffer length */
 #define BLEN 200
@@ -251,7 +251,7 @@ int main(int argc, char **argv)
             output(&sys, erg, traj);
 
         /* propagate system and recompute energies */
-        velverlet(&sys);
+        velverlet_first_half(&sys);
         ekin(&sys);
     }
     /**************************************************/
