@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <data_structure.h>
-#include <utilities.h>
+#include <utilities_ljmd.h>
 
 
 /* generic file- or pathname buffer length */
