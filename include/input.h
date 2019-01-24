@@ -1,16 +1,17 @@
-
 #ifndef __INPUT__
 #define __INPUT__
 
 #include<stdio.h>
 #include<stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <utilities_ljmd.h>
 #include<data_structure.h>
-//#include<utilities_lmjd.h>
 
-#define BLEN 200
+int get_a_line(FILE *fp, char *buf);
 
-static int get_a_line(FILE *fp, char *buf);
-void populate_data(FILE *frestart, char line[], char restfile[],char trajfile[], char ergfile[], mdsys_t *sys);
-void readRetart(FILE *fp, mdsys_t *ptr_sys, char restfile[]);
+int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN], char (*trajfile)[BLEN], char (*ergfile)[BLEN], mdsys_t * sys, int * nprint);
 
-#endif
+void readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN]);
+
+#endif //__INPUT__

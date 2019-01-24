@@ -2,13 +2,10 @@
 
 
 /* a few physical constants */
-// extern 
 const double kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
-// extern 
 const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 
 /* helper function: zero out an array */
-// static 
 void azzero(double *d, const int n)
 {
     int i;
@@ -18,7 +15,6 @@ void azzero(double *d, const int n)
 }
 
 /* helper function: apply minimum image convention */
-// static 
 double pbc(double x, const double boxby2)
 {
     while (x >  boxby2) x -= 2.0*boxby2;

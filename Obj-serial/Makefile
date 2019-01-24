@@ -18,23 +18,16 @@ LDLIBS=-lm -Wl,-rpath,$(dirL)
 
 VPATH=$(dirL)
 
-OBJ = $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/ljmd.o
+OBJ = $(dirL)/output.o $(dirL)/input.o $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/ljmd.o
 
 default: $(exe_name)
 
 clean:
-	rm -f *.mod *.o $(dirL)/ljmd-serial.x
+	rm -f *.mod *.o $(dirR)/ljmd-serial.x $(OBJ) $(dirL)/*~ $(dirI)/*~
 
 # linker rule
 $(exe_name): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
-
-# compilation pattern rule for objects
-<<<<<<< HEAD
-=======
-%.o: %.c $(dirI)/input.h $(dirI)/output.h 
-	$(CC) -c $(CFLAGS) $<
->>>>>>> origin/output
 
 # general rule
 
@@ -48,3 +41,7 @@ $(dirL)/ljmd.o: ljmd.c $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/
 $(dirL)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
 $(dirL)/utilities_ljmd.o: $(dirI)/utilities_ljmd.h
+
+$(dirL)/input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+
+$(dirL)/output.o: $(dirI)/output.h $(dirI)/data_structure.h
