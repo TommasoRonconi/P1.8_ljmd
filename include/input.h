@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include <data_structure.h>
-#include<utilities.h>
+#include<utilities_lmjd.h>
 
 #define BLEN 200
 
