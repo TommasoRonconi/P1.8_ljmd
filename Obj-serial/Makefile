@@ -23,7 +23,7 @@ clean:
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
-%.o: %.c $(dirI)/data_structure.h $(dirI)/utilities.h
+%.o: %.c $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 	$(CC) -c $(CFLAGS) $<
 
 # dependencies
