@@ -15,6 +15,4 @@ static void velverlet_first_half(mdsys_t *sys)
         sys->rz[i] += sys->dt*sys->vz[i];
     }
 
-    /* compute forces and potential energy */
-    force(sys);
 }
