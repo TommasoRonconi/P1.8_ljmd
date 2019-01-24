@@ -18,21 +18,21 @@
 #include <velverlet_time_integration.h>
 
 /* main */
-int main(int argc, char **argv) 
+int main( /* int argc, char **argv */ ) 
 {
   int nprint;
   char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
   FILE *fp,*traj,*erg;
   mdsys_t sys;
 
-  if ( populate_data(stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint/* , BLEN */) ) return 1;
+  if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
 
   /* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
   allocate_sys_arrays( &sys );
 
   /* read restart */
   fp = fopen(restfile, "r");
-  readRestart(fp,&sys,restfile);
+  if ( readRestart(fp,&sys,restfile) ) return 1;
 
   /* initialize forces and energies.*/
   sys.nfi=0;

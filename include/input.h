@@ -12,6 +12,6 @@ int get_a_line(FILE *fp, char *buf);
 
 int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN], char (*trajfile)[BLEN], char (*ergfile)[BLEN], mdsys_t * sys, int * nprint);
 
-void readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN]);
+int readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN]);
 
 #endif //__INPUT__
