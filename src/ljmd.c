@@ -15,6 +15,7 @@
 #include <compute_force.h>
 #include <input.h>
 #include <output.h>
+#include <velverlet_time_integration.h>
 
 /* generic file- or pathname buffer length */
 /* #define BLEN 200 */
@@ -134,31 +135,31 @@
 /*     } */
 /* } */
 
-/* velocity verlet */
-static void velverlet(mdsys_t *sys)
-{
-  int i;
+// /* velocity verlet */
+// static void velverlet(mdsys_t *sys)
+// {
+//     int i;
 
-  /* first part: propagate velocities by half and positions by full step */
-  for (i=0; i<sys->natoms; ++i) {
-    sys->vx[i] += 0.5*sys->dt / mvsq2e * sys->fx[i] / sys->mass;
-    sys->vy[i] += 0.5*sys->dt / mvsq2e * sys->fy[i] / sys->mass;
-    sys->vz[i] += 0.5*sys->dt / mvsq2e * sys->fz[i] / sys->mass;
-    sys->rx[i] += sys->dt*sys->vx[i];
-    sys->ry[i] += sys->dt*sys->vy[i];
-    sys->rz[i] += sys->dt*sys->vz[i];
-  }
+//     /* first part: propagate velocities by half and positions by full step */
+//     for (i=0; i<sys->natoms; ++i) {
+//         sys->vx[i] += 0.5*sys->dt / mvsq2e * sys->fx[i] / sys->mass;
+//         sys->vy[i] += 0.5*sys->dt / mvsq2e * sys->fy[i] / sys->mass;
+//         sys->vz[i] += 0.5*sys->dt / mvsq2e * sys->fz[i] / sys->mass;
+//         sys->rx[i] += sys->dt*sys->vx[i];
+//         sys->ry[i] += sys->dt*sys->vy[i];
+//         sys->rz[i] += sys->dt*sys->vz[i];
+//     }
 
-  /* compute forces and potential energy */
-  force(sys);
+//     /* compute forces and potential energy */
+//     force(sys);
 
-  /* second part: propagate velocities by another half step */
-  for (i=0; i<sys->natoms; ++i) {
-    sys->vx[i] += 0.5*sys->dt / mvsq2e * sys->fx[i] / sys->mass;
-    sys->vy[i] += 0.5*sys->dt / mvsq2e * sys->fy[i] / sys->mass;
-    sys->vz[i] += 0.5*sys->dt / mvsq2e * sys->fz[i] / sys->mass;
-  }
-}
+//     /* second part: propagate velocities by another half step */
+//     for (i=0; i<sys->natoms; ++i) {
+//         sys->vx[i] += 0.5*sys->dt / mvsq2e * sys->fx[i] / sys->mass;
+//         sys->vy[i] += 0.5*sys->dt / mvsq2e * sys->fy[i] / sys->mass;
+//         sys->vz[i] += 0.5*sys->dt / mvsq2e * sys->fz[i] / sys->mass;
+//     }
+// }
 
 /* append data to output. */
 // static void output(mdsys_t *sys, FILE *erg, FILE *traj)
@@ -241,44 +242,87 @@ int main(int argc, char **argv)
   force(&sys);
   ekin(&sys);
     
-  erg=fopen(ergfile,"w");
-  traj=fopen(trajfile,"w");
+/* <<<<<<< HEAD */
+/*   erg=fopen(ergfile,"w"); */
+/*   traj=fopen(trajfile,"w"); */
 
-  printf("Starting simulation with %d atoms for %d steps.\n",sys.natoms, sys.nsteps);
-  printf("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
-  output(&sys, erg, traj);
+/*   printf("Starting simulation with %d atoms for %d steps.\n",sys.natoms, sys.nsteps); */
+/*   printf("     NFI            TEMP            EKIN                 EPOT              ETOT\n"); */
+/*   output(&sys, erg, traj); */
 
-  /**************************************************/
-  /* main MD loop */
-  for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
+/*   /\**************************************************\/ */
+/*   /\* main MD loop *\/ */
+/*   for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) { */
 
-    /* write output, if requested */
-    /* Here we print the output at each step-number/nprint time step
-     * Number of prints is defined in stdin by variable nprint
-     */
-    if ((sys.nfi % nprint) == 0)
-      output(&sys, erg, traj);
+/*     /\* write output, if requested *\/ */
+/*     /\* Here we print the output at each step-number/nprint time step */
+/*      * Number of prints is defined in stdin by variable nprint */
+/*      *\/ */
+/*     if ((sys.nfi % nprint) == 0) */
+/*       output(&sys, erg, traj); */
 
-    /* propagate system and recompute energies */
-    velverlet(&sys);
-    ekin(&sys);
-  }
-  /**************************************************/
+/*     /\* propagate system and recompute energies *\/ */
+/*     velverlet(&sys); */
+/*     ekin(&sys); */
+/*   } */
+/*   /\**************************************************\/ */
 
-  /* clean up: close files, free memory */
-  printf("Simulation Done.\n");
-  fclose(erg);
-  fclose(traj);
+/*   /\* clean up: close files, free memory *\/ */
+/*   printf("Simulation Done.\n"); */
+/*   fclose(erg); */
+/*   fclose(traj); */
 
-  free(sys.rx);
-  free(sys.ry);
-  free(sys.rz);
-  free(sys.vx);
-  free(sys.vy);
-  free(sys.vz);
-  free(sys.fx);
-  free(sys.fy);
-  free(sys.fz);
+/*   free(sys.rx); */
+/*   free(sys.ry); */
+/*   free(sys.rz); */
+/*   free(sys.vx); */
+/*   free(sys.vy); */
+/*   free(sys.vz); */
+/*   free(sys.fx); */
+/*   free(sys.fy); */
+/*   free(sys.fz); */
 
-  return 0;
+/*   return 0; */
+/* ======= */
+    erg=fopen(ergfile,"w");
+    traj=fopen(trajfile,"w");
+
+    printf("Starting simulation with %d atoms for %d steps.\n",sys.natoms, sys.nsteps);
+    printf("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
+    output(&sys, erg, traj);
+
+    /**************************************************/
+    /* main MD loop */
+    for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
+
+        /* write output, if requested */
+        if ((sys.nfi % nprint) == 0)
+            output(&sys, erg, traj);
+
+        
+        velverlet_first_half(&sys); /* propagate system and recompute energies by one half step*/  
+    	force(&sys); /* compute forces and potential energy */
+        velverlet_second_half(&sys); /* propagate system and recompute energies by another half step*/  
+        
+        ekin(&sys);
+    }
+    /**************************************************/
+
+    /* clean up: close files, free memory */
+    printf("Simulation Done.\n");
+    fclose(erg);
+    fclose(traj);
+
+    free(sys.rx);
+    free(sys.ry);
+    free(sys.rz);
+    free(sys.vx);
+    free(sys.vy);
+    free(sys.vz);
+    free(sys.fx);
+    free(sys.fy);
+    free(sys.fz);
+
+    return 0;
+/* >>>>>>> origin/velverlet_time_integration */
 }
