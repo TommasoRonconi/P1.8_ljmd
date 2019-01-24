@@ -5,12 +5,16 @@ CC=gcc
 
 exe_name = $(dirR)/ljmd-serial.x
 
+ES = so
+
 dirR = $(PWD)
 dirI = $(dirR)/include
 dirL = $(dirR)/src
 
-CFLAGS=-Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
-LDLIBS=-lm -Wl,-rpath,$(dirL)
+CFLAGS0 = -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
+
+C_FLAGS = $(CFLAGS0) -I$(dirI)
+LD_FLAGS = -lm -Wl,-rpath,$(dirL)
 
 # list of source files
 # SRC = $(dirI)/.c
@@ -26,11 +30,11 @@ clean:
 
 # linker rule
 $(exe_name): $(OBJ)
-	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
+	$(CC) -o $@ $(C_FLAGS) $^ $(LD_FLAGS)
 
 # general rule
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(C_FLAGS) -c $< -o $@
 
 # pre-requisites
 
