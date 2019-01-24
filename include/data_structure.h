@@ -15,8 +15,4 @@ struct _mdsys
 
 typedef struct _mdsys mdsys_t;
 
-<<<<<<< HEAD
 #endif //__DATA_STRUCTURE__
-=======
-#endif //__DATA_STRUCTURE__
->>>>>>> origin/output
