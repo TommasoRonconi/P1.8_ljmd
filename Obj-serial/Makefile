@@ -3,7 +3,6 @@ SHELL=/bin/sh
 
 CC=gcc
 
-# <<<<<<< HEAD
 exe_name = $(dirR)/ljmd-serial.x
 
 dirR = $(PWD)
@@ -14,23 +13,11 @@ CFLAGS=-Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
 LDLIBS=-lm -Wl,-rpath,$(dirL)
 
 # list of source files
-# =======
-# dirI=../include
-
-# CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI) 
-# LDLIBS=-lm
-
-# # list of source files
-# SRC=ljmd.c 
-# VPATH=../src
-# OBJ=$(SRC:%.c=%.o)
-# >>>>>>> origin/velverlet_time_integration
-
 # SRC = $(dirI)/.c
 
 VPATH=$(dirL)
 
-OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/ljmd.o
+OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/ljmd.o $(dirL)/data_structure.o
 
 default: $(exe_name)
 
@@ -41,9 +28,7 @@ clean:
 $(exe_name): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
-# <<<<<<< HEAD
 # general rule
-
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -57,11 +42,8 @@ $(dirL)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI
 
 $(dirL)/utilities_ljmd.o: $(dirI)/utilities_ljmd.h
 
+$(dirL)/data_structure.o: $(dirI)/data_structure.h
+
 $(dirL)/input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-# =======
-# # compilation pattern rule for objects
-# %.o: %.c $(dirI)/velverlet_time_integration.h
-# 	$(CC) -c $(CFLAGS) $<
-# >>>>>>> origin/velverlet_time_integration
 
 $(dirL)/output.o: $(dirI)/output.h $(dirI)/data_structure.h
