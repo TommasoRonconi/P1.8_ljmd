@@ -1,5 +1,6 @@
 #ifndef __AZZERO__
 #define __AZZERO__
+
 /* helper function: zero out an array */
 static void azzero(double *d, const int n)
 {
@@ -8,11 +9,13 @@ static void azzero(double *d, const int n)
         d[i]=0.0;
     }
 }
+
 #endif //__AZZERO__
 
 
 #ifndef __PBC__
 #define __PBC__
+
 /* helper function: apply minimum image convention */
 static double pbc(double x, const double boxby2)
 {
@@ -20,4 +23,5 @@ static double pbc(double x, const double boxby2)
     while (x < -boxby2) x += 2.0*boxby2;
     return x;
 }
+
 #endif
