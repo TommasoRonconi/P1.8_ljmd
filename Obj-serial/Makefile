@@ -9,8 +9,8 @@ dirR = $(PWD)
 dirI = $(dirR)/include
 dirL = $(dirR)/src
 
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
-LDLIBS=-lm
+CFLAGS=-Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
+LDLIBS=-lm -Wl,-rpath,$(dirL)
 
 # list of source files
 
@@ -18,7 +18,7 @@ LDLIBS=-lm
 
 VPATH=$(dirL)
 
-OBJ = $(dirL)/compute_force.o $(dirL)/ljmd.o
+OBJ = $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/ljmd.o
 
 default: $(exe_name)
 
@@ -40,4 +40,6 @@ $(exe_name): $(OBJ)
 
 $(dirL)/ljmd.o: ljmd.c $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
-$(dirL)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h
+$(dirL)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+
+$(dirL)/utilities_ljmd.o: $(dirI)/utilities_ljmd.h

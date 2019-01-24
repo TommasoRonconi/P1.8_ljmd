@@ -1,21 +1,18 @@
 #ifndef __UTILITIES_LJMD__
 #define __UTILITIES_LJMD__
 
+/* a few physical constants */
+// extern 
+const double kboltz;     /* boltzman constant in kcal/mol/K */
+// extern 
+const double mvsq2e; /* m*v^2 in kcal/mol */
+
 /* helper function: zero out an array */
-static void azzero(double *d, const int n)
-{
-    int i;
-    for (i=0; i<n; ++i) {
-        d[i]=0.0;
-    }
-}
+// static 
+void azzero(double *d, const int n);
 
 /* helper function: apply minimum image convention */
-static double pbc(double x, const double boxby2)
-{
-    while (x >  boxby2) x -= 2.0*boxby2;
-    while (x < -boxby2) x += 2.0*boxby2;
-    return x;
-}
+// static 
+double pbc(double x, const double boxby2);
 
 #endif //__UTITLITIES_LJMD__
