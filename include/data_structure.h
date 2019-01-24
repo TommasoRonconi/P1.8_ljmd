@@ -1,3 +1,6 @@
+#ifndef __DATA_STRUCTURE__
+#define __DATA_STRUCTURE__
+
 /* structure to hold the complete information 
  * about the MD system */
 struct _mdsys {
@@ -10,3 +13,5 @@ struct _mdsys {
 };
 
 typedef struct _mdsys mdsys_t;
+
+#endif //__DATA_STRUCTURE__
