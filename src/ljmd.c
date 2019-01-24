@@ -178,6 +178,7 @@ int main(int argc, char **argv)
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
     FILE *fp,*traj,*erg;
     mdsys_t sys;
+    i =0;
 
     /* read input file */
     // if(get_a_line(stdin,line)) return 1;
@@ -200,7 +201,7 @@ int main(int argc, char **argv)
     // if(get_a_line(stdin,line)) return 1;
     // sys.dt=atof(line);
     // if(get_a_line(stdin,line)) return 1;
-    // nprint=atoi(line);
+      nprint=atoi(line);
 
     populate_data(stdin,line, restfile, trajfile,ergfile, &sys);
       
@@ -215,8 +216,9 @@ int main(int argc, char **argv)
     sys.fz=(double *)malloc(sys.natoms*sizeof(double));
 
     /* read restart */
-    readRetart(restfile,&sys);
-    // fp = fopen(restfile, "r");
+    fp = fopen(restfile, "r");
+    readRetart(fp,&sys,restfile);
+    // 
     // if(fp) {
     //     for (i=0; i<sys.natoms; ++i) {
     //         fscanf(fp,"%lf%lf%lf",sys.rx+i, sys.ry+i, sys.rz+i);

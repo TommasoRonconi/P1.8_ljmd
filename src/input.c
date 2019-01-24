@@ -1,5 +1,6 @@
 #include<input.h>
 
+
 static int get_a_line(FILE *fp, char *buf)
 {
     char tmp[BLEN], *ptr;
@@ -40,7 +41,7 @@ char trajfile[], char ergfile[], mdsys_t *sys)
 {
     if (get_a_line(stdin, line))
         return 1;
-    sys->atoms = atoi(line);
+    sys->natoms = atoi(line);
     if (get_a_line(stdin, line))
         return 1;
     sys->mass = atof(line);
@@ -72,17 +73,17 @@ char trajfile[], char ergfile[], mdsys_t *sys)
         return 1;
 }
 
-void readRetart(File *f, mdsys_t *ptr_sys)
+void readRetart(FILE *fp, mdsys_t *ptr_sys, char restfile[])
 {
-    sys = &ptr_sys
+    _mdsys sys = &ptr_sys;
     fp = fopen(restfile, "r");
     if (fp)
     {
-        for (i = 0; i < sys->natoms; ++i)
+        for (int i = 0; i < sys->natoms; ++i)
         {
             fscanf(fp, "%lf%lf%lf", sys->rx + i, sys->ry + i, sys->rz + i);
         }
-        for (i = 0; i < sys->natoms; ++i)
+        for (int i = 0; i < sys->natoms; ++i)
         {
             fscanf(fp, "%lf%lf%lf", sys->vx + i, sys->vy + i, sys->vz + i);
         }
