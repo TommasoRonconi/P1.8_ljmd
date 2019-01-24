@@ -1,5 +1,5 @@
-#ifndef __AZZERO__
-#define __AZZERO__
+#ifndef __UTILITIES_LJMD__
+#define __UTILITIES_LJMD__
 
 /* helper function: zero out an array */
 static void azzero(double *d, const int n)
@@ -10,12 +10,6 @@ static void azzero(double *d, const int n)
     }
 }
 
-#endif //__AZZERO__
-
-
-#ifndef __PBC__
-#define __PBC__
-
 /* helper function: apply minimum image convention */
 static double pbc(double x, const double boxby2)
 {
@@ -24,4 +18,4 @@ static double pbc(double x, const double boxby2)
     return x;
 }
 
-#endif
+#endif //__UTITLITIES_LJMD__

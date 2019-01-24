@@ -3,28 +3,41 @@ SHELL=/bin/sh
 
 CC=gcc
 
-dirI=../include
+exe_name = $(dirR)/ljmd-serial.x
+
+dirR = $(PWD)
+dirI = $(dirR)/include
+dirL = $(dirR)/src
 
 CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
 LDLIBS=-lm
 
 # list of source files
-SRC=ljmd.c 
-VPATH=../src
-OBJ=$(SRC:%.c=%.o)
 
-default: ../ljmd-serial.x
+# SRC = $(dirI)/.c
+
+VPATH=$(dirL)
+
+OBJ = $(dirL)/compute_force.o $(dirL)/ljmd.o
+
+default: $(exe_name)
 
 clean:
-	rm -f *.mod *.o ../ljmd-serial.x
+	rm -f *.mod *.o $(dirL)/ljmd-serial.x
 
 # linker rule
-../ljmd-serial.x: $(OBJ)
+$(exe_name): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
-%.o: %.c $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-	$(CC) -c $(CFLAGS) $<
 
-# dependencies
-ljmd.o: ljmd.c
+# general rule
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# pre-requisites
+
+$(dirL)/ljmd.o: ljmd.c $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+
+$(dirL)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h
