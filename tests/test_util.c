@@ -31,7 +31,7 @@ int main()
 	for(int ii = 0; ii < size1; ii++)
 	{
 		test_array1[ii] = ii * 2.0;
-		printf("%f ", test_array1[ii]);
+		printf("Array[%d] = %.1f\n", ii, test_array1[ii]);
 	}
 	printf("\n\nZero out the array with azzero()...\nCheck the array:\n\n");
 
@@ -42,7 +42,7 @@ int main()
 	for(int ii = 0; ii < size1; ++ii)
 	{
 		assert(test_array1[ii] == 0);
-		printf("%f ", test_array1[ii]);
+		printf("Array[%d] = %.1f\n", ii, test_array1[ii]);
 	}
 	printf("\n\n");
 
@@ -63,13 +63,13 @@ int main()
 	assert(xx == 200.0);
 	printf("--------------------------------------\n");
 
-	printf("Check: computed value of xx = %f\n", xx);
+	printf("Check: computed value of xx = %.1f\n", xx);
 
-	/*printf("--------------------------------------\n");
+	printf("\n--------------------------------------\n");
 
-	printf("assert for incorrect value of xx (=300.0)\n");
+	printf("Assert for incorrect value of xx (=300.0)...\n");
 	assert(xx == 300.0);
-	printf("--------------------------------------\n");*/
+	printf("--------------------------------------\n");
 		
 	return 0;
 }
