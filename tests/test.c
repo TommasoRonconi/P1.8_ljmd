@@ -14,9 +14,16 @@
 #include <data_structure.h>
 #include <compute_force.h>
 #include <input.h>
-#include <output.h>
+#include "output.h"
 #include <velverlet_time_integration.h>
+#include "myunittest.h"
 
+int tests_run = 0;
+double test_mass;
+double test_box;
+double test_kinetic_energy;
+double test_force;
+double test_rx;
 
 /* main */
 int main(int argc, char **argv) 
@@ -27,9 +34,13 @@ int main(int argc, char **argv)
   mdsys_t sys;
 
 
+
   if ( populate_data(stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint/* , BLEN */) ) return 1;
+
+  test_mass = sys.mass;
+  test_box = sys.box;
       
-  sys.rx = (double *)malloc(sys.natoms * sizeof(double));
+  sys.rx=(double *)malloc(sys.natoms * sizeof(double));
   sys.ry=(double *)malloc(sys.natoms*sizeof(double));
   sys.rz=(double *)malloc(sys.natoms*sizeof(double));
   sys.vx=(double *)malloc(sys.natoms*sizeof(double));
@@ -69,12 +80,19 @@ int main(int argc, char **argv)
     	force(&sys); /* compute forces and potential energy */
         velverlet_second_half(&sys); /* propagate system and recompute energies by another half step*/  
         
+		if (sys.nfi == 10)
+		{
+			test_kinetic_energy = sys.ekin;
+			test_force = sys.fx[0];
+			test_rx = sys.rx[0];
+		}
+        
         ekin(&sys);
+
+
     }
     /**************************************************/
-
     /* clean up: close files, free memory */
-    printf("Simulation Done.\n");
     fclose(erg);
     fclose(traj);
 
@@ -87,6 +105,21 @@ int main(int argc, char **argv)
     free(sys.fx);
     free(sys.fy);
     free(sys.fz);
+
+    printf("Simulation Done.\n");
+    /****************************************************/
+    /* Unittesting */
+	char *result = all_tests();
+	if (result != 0) 
+	{
+		 printf("%s\n", result);
+	}
+	else
+	{
+		 printf("\n\nALL TESTS PASSED\n\n");
+	}
+	printf("\nTests run: %d\n", tests_run);
+
 
     return 0;
 }
