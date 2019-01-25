@@ -19,3 +19,6 @@ clean:
 
 check: serial
 	$(MAKE) $(MFLAGS) -C examples check
+
+mytest: library
+	$(MAKE) $(MFLAGS) -C tests run
