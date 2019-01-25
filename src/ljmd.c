@@ -17,6 +17,8 @@
 #include <output.h>
 #include <velverlet_time_integration.h>
 
+// unittest
+#include "minunit.h"
 
 /* main */
 int main(int argc, char **argv) 
@@ -28,6 +30,12 @@ int main(int argc, char **argv)
 
 
   if ( populate_data(stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint/* , BLEN */) ) return 1;
+
+  static char * test_foo()
+  {
+	mu_assert("error, foo != 7", foo == 7);
+ 	return 0;
+  } 
       
   sys.rx = (double *)malloc(sys.natoms * sizeof(double));
   sys.ry=(double *)malloc(sys.natoms*sizeof(double));
