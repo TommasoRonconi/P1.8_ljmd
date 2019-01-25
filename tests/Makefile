@@ -9,7 +9,7 @@ dirR = $(PWD)
 dirI = $(dirR)/../include
 dirL = $(dirR)/../src
 
-CFLAGS=-Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
+CFLAGS=-Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI) -DDO_UNIT_TESTS
 LDLIBS=-lm -Wl,-rpath,$(dirL)
 
 
@@ -31,7 +31,7 @@ $(exe_name): $(OBJ) $(LIBS)
 	$(CC) $(CFLAGS) -c -fPIC $< -o $@
 
 %.so: %.o
-	$(CC) -shared -o $@ $<
+	$(CC) -shared -fPIC -o $@ $<
 
 # pre-requisites
 # .o
