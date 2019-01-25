@@ -21,7 +21,7 @@ VPATH=$(dirL)
 
 # Objects:
 OBJ_INTERFACE = $(dirL)/ljmd.o
-OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/data_structure.o
+OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/compute_force.o $(dirL)/data_structure.o $(dirL)/utilities_ljmd.o
 
 # Shared library:
 LIB = $(dirS)/libLJMD.$(ES)
@@ -35,15 +35,15 @@ clean: clean_garbage
 	rm -f $(dirR)/ljmd-serial.x $(OBJ) $(OBJ_INTERFACE) $(LIB)
 
 # linker rule
-$(exe_name): $(OBJ) $(OBJ_INTERFACE) libLJMD #$(LIB)
-	$(CC) -o $@ $(C_FLAGS) $(OBJ) $(OBJ_INTERFACE) $(LD_FLAGS) -L$(dirS) -lLJMD
+$(exe_name): $(OBJ_INTERFACE) libLJMD 
+	$(CC) -o $@ $(OBJ_INTERFACE) $(LD_FLAGS) -L$(dirS) -lLJMD 
 
 # general rule
 %.o: %.c
 	$(CC) $(C_FLAGS) -c -fPIC $< -o $@
 
 libLJMD: $(OBJ)
-	$(CC) $(C_FLAGS0) -shared -fPIC -o $(LIB) $<
+	$(CC) $(C_FLAGS0) -shared -o $(LIB) $^
 
 # pre-requisites
 # .o
