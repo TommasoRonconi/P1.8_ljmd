@@ -17,6 +17,9 @@
 #include <output.h>
 #include <velverlet_time_integration.h>
 
+// unittest
+#include "minunit.h"
+
 /* main */
 int main( /* int argc, char **argv */ ) 
 {
@@ -79,5 +82,5 @@ int main( /* int argc, char **argv */ )
   free_sys_arrays( &sys );
 
   return 0;
-
+  
 }
