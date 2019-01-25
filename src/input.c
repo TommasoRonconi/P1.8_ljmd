@@ -100,15 +100,6 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
     return 1;
   *nprint=atoi(*line);
 
-  // test that we have all we need.
-  assert(sys->natoms == 108);
-  assert(sys->mass == 39.948);
-  assert(sys->epsilon == 0.2379);
-  assert(sys->sigma == 3.405);
-  assert(sys->rcut == 8.5);
-  assert(sys->box == 17.1580);
-  assert(sys->nsteps == 10000);
-
   return 0;
 }
 
