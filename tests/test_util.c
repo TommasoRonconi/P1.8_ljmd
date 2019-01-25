@@ -61,7 +61,22 @@ int main()
 	xx = 600.0;
 
 	xx = pbc(xx, boxbyxx);
-	printf("%f\n", xx);
 
+	/* The correct value for xx should be 200.0;
+		Trying assert with the correct and
+		an incorrect value */
+	
+	printf("assert for correct value of xx(=200.0)\n");
+	assert(xx == 200.0);
+	printf("--------------------------------------\n");
+
+	printf("Computed value of xx = %f\n", xx);
+
+	printf("--------------------------------------\n");
+
+	printf("assert for incorrect value of xx (=300.0)\n");
+	assert(xx == 300.0);
+	printf("--------------------------------------\n");
+		
 	return 0;
 }
