@@ -14,41 +14,47 @@
 #include <data_structure.h>
 #include <compute_force.h>
 #include <input.h>
-#include "output.h"
+#include <output.h>
 #include <velverlet_time_integration.h>
 #include "myunittest.h"
 
 int tests_run = 0;
-double test_mass;
-double test_box;
-double test_kinetic_energy;
-double test_force;
-double test_rx;
+
+
+test_sys gsys;
 
 /* main */
 int main(int argc, char **argv) 
 {
+
   int nprint;
   char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
   FILE *fp,*traj,*erg;
   mdsys_t sys;
 
-
-
   if ( populate_data(stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint/* , BLEN */) ) return 1;
+  
+  // allocate_sys_arrays( gsys );
+  allocate_sys_arrays( &sys );
 
-  test_mass = sys.mass;
-  test_box = sys.box;
-      
-  sys.rx=(double *)malloc(sys.natoms * sizeof(double));
-  sys.ry=(double *)malloc(sys.natoms*sizeof(double));
-  sys.rz=(double *)malloc(sys.natoms*sizeof(double));
-  sys.vx=(double *)malloc(sys.natoms*sizeof(double));
-  sys.vy=(double *)malloc(sys.natoms*sizeof(double));
-  sys.vz=(double *)malloc(sys.natoms*sizeof(double));
-  sys.fx=(double *)malloc(sys.natoms*sizeof(double));
-  sys.fy=(double *)malloc(sys.natoms*sizeof(double));
-  sys.fz=(double *)malloc(sys.natoms*sizeof(double));
+  gsys.natoms = sys.natoms;
+  gsys.mass = sys.mass;
+  gsys.epsilon = sys.epsilon;
+  gsys.sigma = sys.sigma;
+  gsys.rcut = sys.rcut;
+  gsys.box = sys.box;
+  gsys.nsteps = sys.nsteps;
+
+  // testing azzero
+  double *tets_array = (double *) malloc( sys.natoms * sizeof(double) );
+  azzero(tets_array,sys.natoms);
+  gsys.azz_t = tets_array[rand()%sys.natoms];
+
+  // testing pbc
+  const double boxbyxx = 200;
+  double xx = 650;
+  xx = pbc(xx, boxbyxx);
+  gsys.pbc_t = xx;
 
   /* read restart */
   fp = fopen(restfile, "r");
@@ -82,9 +88,12 @@ int main(int argc, char **argv)
         
 		if (sys.nfi == 10)
 		{
-			test_kinetic_energy = sys.ekin;
-			test_force = sys.fx[0];
-			test_rx = sys.rx[0];
+			// test_kinetic_energy = sys.ekin;
+			// test_force = sys.fx[0];
+			// test_rx = sys.rx[0];
+			gsys.ekin = sys.ekin;
+			gsys.fx = sys.fx[0];
+			gsys.rx = sys.rx[0];
 		}
         
         ekin(&sys);
@@ -96,16 +105,9 @@ int main(int argc, char **argv)
     fclose(erg);
     fclose(traj);
 
-    free(sys.rx);
-    free(sys.ry);
-    free(sys.rz);
-    free(sys.vx);
-    free(sys.vy);
-    free(sys.vz);
-    free(sys.fx);
-    free(sys.fy);
-    free(sys.fz);
-
+  	free_sys_arrays( &sys );
+  	// free_sys_arrays( gsys );
+    
     printf("Simulation Done.\n");
     /****************************************************/
     /* Unittesting */

@@ -15,8 +15,8 @@ LDLIBS=-lm -Wl,-rpath,$(dirL)
 
 VPATH=$(dirL)
 
-OBJ = velverlet_time_integration.o output.o input.o utilities_ljmd.o compute_force.o test.o
-LIBS = velverlet_time_integration.so output.so input.so utilities_ljmd.so compute_force.so 
+OBJ = velverlet_time_integration.o output.o input.o utilities_ljmd.o compute_force.o test.o data_structure.o
+LIBS = velverlet_time_integration.so output.so input.so utilities_ljmd.so compute_force.so data_structure.so
 
 default: $(exe_name)
 
@@ -47,6 +47,8 @@ input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
 output.o: $(dirI)/output.h $(dirI)/data_structure.h
 
+data_structure.o: $(dirI)/data_structure.h
+
 # .so
 velverlet_time_integration.so: velverlet_time_integration.o
 
@@ -57,3 +59,5 @@ utilities_ljmd.so: utilities_ljmd.o
 input.so: input.o
 
 output.so: output.o
+
+data_structure.so: data_structure.o
