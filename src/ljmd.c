@@ -17,8 +17,10 @@
 #include <output.h>
 #include <velverlet_time_integration.h>
 
+#ifdef DO_UNIT_TESTS
 // unittest
-#include "minunit.h"
+#include "mynunittest.h"
+#endif //DO_UNIT_TESTS
 
 /* main */
 int main( /* int argc, char **argv */ ) 
