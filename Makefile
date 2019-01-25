@@ -21,4 +21,4 @@ check: serial
 	$(MAKE) $(MFLAGS) -C examples check
 
 mytest: library
-	$(MAKE) $(MFLAGS) -C tests run
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests run
