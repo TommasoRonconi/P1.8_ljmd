@@ -10,6 +10,9 @@ default: serial
 serial:
 	$(MAKE) $(MFLAGS) -C Obj-$@
 
+library:
+	$(MAKE) $(MFLAGS) -C Obj-serial libLJMD
+
 clean:
 	$(MAKE) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean

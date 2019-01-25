@@ -10,34 +10,40 @@ ES = so
 dirR = $(PWD)
 dirI = $(dirR)/include
 dirL = $(dirR)/src
-dirO =
+dirS = $(dirR)/Obj-serial
 
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 
 C_FLAGS = $(CFLAGS0) -I$(dirI)
-LD_FLAGS = -lm -Wl,-rpath,$(dirL)
+LD_FLAGS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS)
 
 VPATH=$(dirL)
 
-OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/data_structure.o $(dirL)/ljmd.o
+# Objects:
+OBJ_INTERFACE = $(dirL)/ljmd.o
+OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/utilities_ljmd.o $(dirL)/compute_force.o $(dirL)/data_structure.o
 
-LIBS = $(dirL)/velverlet_time_integration.so $(dirL)/output.so $(dirL)/input.so $(dirL)/utilities_ljmd.so $(dirL)/compute_force.so  $(dirL)/data_structure.so
+# Shared library:
+LIB = $(dirS)/libLJMD.$(ES)
 
 default: $(exe_name)
 
-clean:
-	rm -f *.mod *.o $(dirR)/ljmd-serial.x $(OBJ) $(LIBS) $(dirL)/*~ $(dirI)/*~
+clean_garbage:
+	rm -f *.mod *.o $(dirL)/*~ $(dirI)/*~
+
+clean: clean_garbage
+	rm -f $(dirR)/ljmd-serial.x $(OBJ) $(OBJ_INTERFACE) $(LIB)
 
 # linker rule
-$(exe_name): $(OBJ) $(LIBS)
-	$(CC) -o $@ $(C_FLAGS) $^ $(LD_FLAGS)
+$(exe_name): $(OBJ) $(OBJ_INTERFACE) libLJMD #$(LIB)
+	$(CC) -o $@ $(C_FLAGS) $(OBJ) $(OBJ_INTERFACE) $(LD_FLAGS) -L$(dirS) -lLJMD
 
 # general rule
 %.o: %.c
 	$(CC) $(C_FLAGS) -c -fPIC $< -o $@
 
-%.so: %.o
-	$(CC) $(C_FLAGS0) -shared -fPIC -o $@ $<
+libLJMD: $(OBJ)
+	$(CC) $(C_FLAGS0) -shared -fPIC -o $(LIB) $<
 
 # pre-requisites
 # .o
@@ -54,15 +60,3 @@ $(dirL)/data_structure.o: $(dirI)/data_structure.h
 $(dirL)/input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
 $(dirL)/output.o: $(dirI)/output.h $(dirI)/data_structure.h
-
-# .so
-
-# $(dirL)/velverlet_time_integration.so: velverlet_time_integration.o
-
-# $(dirL)/compute_force.so: compute_force.o
-
-# $(dirL)/utilities_ljmd.so: utilities_ljmd.o
-
-# $(dirL)/input.so: input.o
-
-# $(dirL)/output.so: output.o
