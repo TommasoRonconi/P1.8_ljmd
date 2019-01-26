@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
-#include "mpi.h"
+#include <mpi.h>
 #include <utilities_ljmd.h>
 #include <data_structure.h>
 #include <compute_force.h>
@@ -32,7 +32,10 @@ int main( int argc, char **argv )
   MPI_Init( &argc, &argv );
   MPI_Comm_size( MPI_COMM_WORLD, &npes );
   MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-  printf( "Hello from process %d of %d\n", rank, npes );
+  sys.rank = rank;
+  sys.npes = npes;
+  sys.comm = MPI_COMM_WORLD;
+  printf( "Hello from process %d of %d\n", sys.rank, sys.npes );
 
 
   /* populate the data_structure with input data */
@@ -42,8 +45,8 @@ int main( int argc, char **argv )
   allocate_sys_arrays( &sys );
 
   /* read restart */
-  fp = fopen(restfile, "r");
-  if ( readRestart(fp,&sys,restfile) ) return 1;
+  fp = fopen( restfile, "r" );
+  if ( readRestart( fp, &sys,restfile ) ) return 1;
 
   /* initialize forces and energies.*/
   sys.nfi=0;

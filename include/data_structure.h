@@ -2,17 +2,23 @@
 #define __DATA_STRUCTURE__
 
 #include <stdlib.h>
+#include <mpi.h>
 
 /* structure to hold the complete information 
  * about the MD system */
 struct _mdsys
 {
-    int natoms, nfi, nsteps;
-    double dt, mass, epsilon, sigma, box, rcut;
-    double ekin, epot, temp;
-    double *rx, *ry, *rz;
-    double *vx, *vy, *vz;
-    double *fx, *fy, *fz;
+  int natoms, nfi, nsteps;
+  double dt, mass, epsilon, sigma, box, rcut;
+  double ekin, epot, temp;
+  double *rx, *ry, *rz;
+  double *vx, *vy, *vz;
+  double *fx, *fy, *fz;
+
+  /* variables to manage MPI parallelization */
+  int rank, npes, offset, n_loc;
+  MPI_Comm comm;
+  
 };
 
 typedef struct _mdsys mdsys_t;
