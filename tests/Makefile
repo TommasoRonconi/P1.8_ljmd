@@ -20,14 +20,14 @@ OBJ = test.o
 default: test
 
 clean:
-	rm -f *.mod *.o test $(OBJ)
+	rm -f *.mod *.o *.x $(OBJ)
 
 
 test: $(OBJ)
-	$(CC) -o $@ $< $(LDLIBS)
+	$(CC) -o $@.x $< $(LDLIBS)
 
 run: test
-	$(dirT)/test < argon_3.inp
+	$(dirT)/test.x < argon_3.inp
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
