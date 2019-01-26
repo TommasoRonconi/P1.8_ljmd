@@ -18,7 +18,7 @@
 #include <velverlet_time_integration.h>
 
 /* main */
-int main( /* int argc, char **argv */ ) 
+int main( int argc, char **argv ) 
 {
 
   int rank, npes;
