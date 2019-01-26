@@ -16,6 +16,7 @@ library:
 clean:
 	$(MAKE) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean
+	$(MAKE) $(MFLAGS) -C tests clean
 
 check: serial
 	$(MAKE) $(MFLAGS) -C examples check
