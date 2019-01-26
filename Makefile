@@ -10,9 +10,16 @@ default: serial
 serial:
 	$(MAKE) $(MFLAGS) -C Obj-$@
 
+library:
+	$(MAKE) $(MFLAGS) -C Obj-serial libLJMD
+
 clean:
 	$(MAKE) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean
+	$(MAKE) $(MFLAGS) -C tests clean
 
 check: serial
 	$(MAKE) $(MFLAGS) -C examples check
+
+mytest: library
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests run

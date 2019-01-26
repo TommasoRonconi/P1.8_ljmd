@@ -17,6 +17,11 @@
 #include <output.h>
 #include <velverlet_time_integration.h>
 
+#ifdef DO_UNIT_TESTS
+// unittest
+#include "mynunittest.h"
+#endif //DO_UNIT_TESTS
+
 /* main */
 int main( /* int argc, char **argv */ ) 
 {
@@ -79,5 +84,5 @@ int main( /* int argc, char **argv */ )
   free_sys_arrays( &sys );
 
   return 0;
-
+  
 }
