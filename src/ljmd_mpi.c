@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include "mpi.h"
 #include <utilities_ljmd.h>
 #include <data_structure.h>
 #include <compute_force.h>
@@ -27,10 +28,14 @@ int main( int argc, char **argv )
   FILE *fp,*traj,*erg;
   mdsys_t sys;
 
+  /* Initialize MPI */
   MPI_Init( &argc, &argv );
   MPI_Comm_size( MPI_COMM_WORLD, &npes );
-  MPI_Comm_rank( MPI_COMM_WORLD, &nrank );
+  MPI_Comm_rank( MPI_COMM_WORLD, &rank );
+  printf( "Hello from process %d of %d\n", rank, npes );
 
+
+  /* populate the data_structure with input data */
   if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
 
   /* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
@@ -83,6 +88,9 @@ int main( int argc, char **argv )
 
   /* free memory allocated */
   free_sys_arrays( &sys );
+
+  /* Finalize MPI */
+  MPI_Finalize();
 
   return 0;
 
