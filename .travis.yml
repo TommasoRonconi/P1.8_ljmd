@@ -9,6 +9,7 @@ compiler:
 
 script:
   - make check
+  - make mytests
 
 notifications:
   slack: mhpc2018-2019:lgG1Ah8lznJPdR2VjXy6Ep2I
