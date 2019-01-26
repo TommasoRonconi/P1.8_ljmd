@@ -24,7 +24,7 @@ int tests_run = 0;
 test_sys gsys;
 
 /* main */
-int main(int argc, char **argv) 
+int main( /* int argc, char **argv */ ) 
 {
 
   int nprint;
