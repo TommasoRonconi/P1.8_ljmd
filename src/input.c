@@ -103,20 +103,27 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
   return 0;
 }
 
-void readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN])
+int readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN])
 {
     mdsys_t sys = *ptr_sys;
+    int i;
     
     fp = fopen(restfile, "r");
     if (fp)
     {
-        for (int i = 0; i < sys.natoms; ++i)
+        for (i = 0; i < sys.natoms; ++i)
         {
-            fscanf(fp, "%lf%lf%lf", sys.rx + i, sys.ry + i, sys.rz + i);
+	  if ( fscanf(fp, "%lf%lf%lf", sys.rx + i, sys.ry + i, sys.rz + i) < 1 ) {
+	    perror("No input in file.");
+	    return 1;
+	  }
         }
-        for (int i = 0; i < sys.natoms; ++i)
+        for (i = 0; i < sys.natoms; ++i)
         {
-            fscanf(fp, "%lf%lf%lf", sys.vx + i, sys.vy + i, sys.vz + i);
+	  if ( fscanf(fp, "%lf%lf%lf", sys.vx + i, sys.vy + i, sys.vz + i) < 1 ) {
+	    perror("No input in file.");
+	    return 2;
+	  }
         }
         fclose(fp);
         azzero(sys.fx, sys.natoms);
@@ -126,6 +133,8 @@ void readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN])
     else
     {
         perror("cannot read restart file");
-        //return 3; I am not sure yet why we have to return 3
+	return 3;
     }
+
+    return 0;
 }

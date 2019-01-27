@@ -1,58 +1,37 @@
+# -*- Makefile -*-
 SHELL=/bin/sh
 
 CC=gcc
 
-exe_name = $(dirR)/ljmd-serial.x
+dirR = $(PWD)/..
+dirI = $(dirR)/include
+dirL = $(dirR)/src
+dirS = $(dirR)/Obj-serial
+dirT = $(dirR)/tests
 
-dirR = $(PWD)
-dirI = $(dirR)/../include
-dirL = $(dirR)/../src
-
-CFLAGS=-Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI)
-LDLIBS=-lm -Wl,-rpath,$(dirL)
+CFLAGS = -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI) -I$(dirT)
+LDLIBS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS) -L$(dirS) -lLJMD
 
 
-VPATH=$(dirL)
+# VPATH=$(dirL)
 
-OBJ = velverlet_time_integration.o output.o input.o utilities_ljmd.o compute_force.o test.o
-LIBS = velverlet_time_integration.so output.so input.so utilities_ljmd.so compute_force.so 
+OBJ = test.o
 
-default: $(exe_name)
+default: test
 
 clean:
-	rm -f *.mod *.o $(dirR)/ljmd-serial.x $(OBJ) $(dirL)/*~ $(dirI)/*~
+	rm -f *.mod *.o *.x $(OBJ)
 
 
-$(exe_name): $(OBJ) $(LIBS)
-	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
+test: $(OBJ)
+	$(CC) -o $@.x $< $(LDLIBS)
+
+run: test
+	$(dirT)/test.x < argon_3.inp
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -fPIC $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
-%.so: %.o
-	$(CC) -shared -o $@ $<
+# pre-requisite
 
-# pre-requisites
-# .o
-test.o: test.c $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h $(dirR)/myunittest.h
-
-velverlet_time_integration.o: $(dirI)/velverlet_time_integration.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-
-compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-
-utilities_ljmd.o: $(dirI)/utilities_ljmd.h
-
-input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-
-output.o: $(dirI)/output.h $(dirI)/data_structure.h
-
-# .so
-velverlet_time_integration.so: $(dirI)/velverlet_time_integration.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-
-compute_force.so: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-
-utilities_ljmd.so: $(dirI)/utilities_ljmd.h
-
-input.so: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
-
-output.so: $(dirI)/output.h $(dirI)/data_structure.h
+test.o: myunittest.h
