@@ -25,7 +25,7 @@ int main( int argc, char **argv )
   int rank, npes;
   int nprint;
   char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
-  FILE *fp,*traj,*erg;
+  FILE *traj,*erg;
   mdsys_t sys;
 
   /* Initialize MPI */
@@ -35,18 +35,27 @@ int main( int argc, char **argv )
   sys.rank = rank;
   sys.npes = npes;
   sys.comm = MPI_COMM_WORLD;
-  printf( "Hello from process %d of %d\n", sys.rank, sys.npes );
 
 
   /* populate the data_structure with input data */
-  if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
+  if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) {
+    MPI_Abort( MPI_COMM_WORLD, 1 );
+    return 1;
+  }
+  printf( "Hello from process %d of %d\nnloc = %d, offset = %d\n", sys.rank, sys.npes, sys.nloc, sys.offset );
 
   /* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
   allocate_sys_arrays( &sys );
 
   /* read restart */
-  if ( readRestart( &sys, restfile ) ) return 1;
+  if ( readRestart( &sys, restfile ) ) {
+    MPI_Abort( MPI_COMM_WORLD, 2 );
+    return 2;
+  }
 
+  if ( rank == 1 )
+    printf("%p\t%p\n", sys.rx, sys.rx+sys.offset);
+  
   /* initialize forces and energies.*/
   sys.nfi=0;
   force( &sys );
@@ -70,7 +79,7 @@ int main( int argc, char **argv )
   for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
 
     /* write output, if requested */
-    if ( ( ( sys.nfi % nprint ) == 0 ) && ( sys.rank == 0 ) ) output(&sys, erg, traj);
+    if ( ( sys.rank == 0 ) && ( ( sys.nfi % nprint ) == 0 ) ) output(&sys, erg, traj);
 
     /* propagate system and recompute energies by one half step*/          
     velverlet_first_half(&sys);

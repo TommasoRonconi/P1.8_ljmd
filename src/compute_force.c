@@ -26,15 +26,28 @@ void force(mdsys_t *sys)
 {
   double r,ffac;
   double rx,ry,rz;
-  int i,j;
+  int i, ii, j;
 
   /* zero energy and forces */
-  sys->epot=0.0;
-  azzero(sys->fx,sys->natoms);
-  azzero(sys->fy,sys->natoms);
-  azzero(sys->fz,sys->natoms);
+  double epot = 0.0;
+  double * cx = ( double * ) malloc( sys->natoms * sizeof( double ) );
+  double * cy = ( double * ) malloc( sys->natoms * sizeof( double ) );
+  double * cz = ( double * ) malloc( sys->natoms * sizeof( double ) );
+  azzero( cx, sys->natoms );
+  azzero( cy, sys->natoms );
+  azzero( cz, sys->natoms );
+  /* sys->epot=0.0; */
+  /* azzero(sys->fx,sys->natoms); */
+  /* azzero(sys->fy,sys->natoms); */
+  /* azzero(sys->fz,sys->natoms); */
 
-  for(i=0; i < (sys->natoms); ++i) {
+  MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+  MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+  MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+  /* for( i = 0; i < (sys->natoms); ++i ) { */
+  for( i = 0; i < (sys->natoms); i += sys->npes ) {
+    ii = i + sys->rank;
+    if ( ii >= ( sys->natoms - 1 ) ) break;
     for(j=0; j < (sys->natoms); ++j) {
 
       /* particles have no interactions with themselves */
@@ -51,15 +64,27 @@ void force(mdsys_t *sys)
 	ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
 				  +6*pow(sys->sigma/r,6.0)/r);
                 
-	sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-					   -pow(sys->sigma/r,6.0));
+	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
+				      -pow(sys->sigma/r,6.0));
+	/* sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0) */
+	/* 				   -pow(sys->sigma/r,6.0)); */
 
-	sys->fx[i] += rx/r*ffac;
-	sys->fy[i] += ry/r*ffac;
-	sys->fz[i] += rz/r*ffac;
+        cx[j] += rx/r*ffac;
+        cy[j] += ry/r*ffac;
+        cz[j] += rz/r*ffac;
+	/* sys->fx[i] += rx/r*ffac; */
+	/* sys->fy[i] += ry/r*ffac; */
+	/* sys->fz[i] += rz/r*ffac; */
       }
     }
+    MPI_Reduce( cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    MPI_Reduce( cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    MPI_Reduce( cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
   }
+  free( cx );
+  free( cy );
+  free( cz );
 
   return;
 }

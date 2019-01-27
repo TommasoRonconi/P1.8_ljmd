@@ -16,7 +16,7 @@ struct _mdsys
   double *fx, *fy, *fz;
 
   /* variables to manage MPI parallelization */
-  int rank, npes, offset, n_loc;
+  int rank, npes, nloc, offset;
   MPI_Comm comm;
   
 };

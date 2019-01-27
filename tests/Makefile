@@ -20,7 +20,7 @@ OBJ = test.o
 default: test
 
 clean:
-	rm -f *.mod *.o *.x $(OBJ)
+	rm -f *.mod *.o *.x $(OBJ) *.xyz *.dat
 
 
 test: $(OBJ)
