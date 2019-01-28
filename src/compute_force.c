@@ -28,14 +28,16 @@ void force(mdsys_t *sys)
   double rx,ry,rz;
   double time1, time2;
   int i, j;
+  double epot = 0.0;
+
+  double * fx, *fy, *fz;
 
   /* zero energy and forces */
 #ifdef USE_MPI
-  double epot = 0.0;
-  
-  azzero( sys->cx, sys->natoms );
-  azzero( sys->cy, sys->natoms );
-  azzero( sys->cz, sys->natoms );
+
+  fx = sys->cx;
+  fy = sys->cy;
+  fz = sys->cz;
 
   time1 = MPI_Wtime();
   /* communicate to all the processes previous step update of positions */
@@ -44,15 +46,19 @@ void force(mdsys_t *sys)
   MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   time2 = MPI_Wtime();
   sys->comm_time += time2 - time1;
+  
 #else
-  sys->epot=0.0;
-  azzero(sys->fx,sys->natoms);
-  azzero(sys->fy,sys->natoms);
-  azzero(sys->fz,sys->natoms);
+  /* sys->epot=0.0; */
+  fx = sys->fx;
+  fy = sys->fy;
+  fz = sys->fz;
 #endif //USE_MPI
+  azzero( fx, sys->natoms );
+  azzero( fy, sys->natoms );
+  azzero( fz, sys->natoms );
 
   /* loop to compute forces */
-  for( i = sys->rank; i < (sys->natoms) - 1; i += sys->npes ) {
+  for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
     for(j=0; j < (sys->natoms); ++j) {
 
       /* particles have no interactions with themselves */
@@ -69,40 +75,27 @@ void force(mdsys_t *sys)
 	ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
 				  +6*pow(sys->sigma/r,6.0)/r);
 
-#ifdef USE_MPI
 	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
 				      -pow(sys->sigma/r,6.0));
-        sys->cx[i] += rx/r*ffac;
-        sys->cy[i] += ry/r*ffac;
-        sys->cz[i] += rz/r*ffac;
+	fx[i] += rx/r*ffac;
+	fy[i] += ry/r*ffac;
+	fz[i] += rz/r*ffac;
       }
     }
-    time1 = MPI_Wtime();
-    sys->force_time += time1 - time2;
-    MPI_Reduce( sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    MPI_Reduce( sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    MPI_Reduce( sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    time2 = MPI_Wtime();
-    sys->comm_time += time2 - time1;
+  
+
+#ifdef USE_MPI    
+  time1 = MPI_Wtime();
+  sys->force_time += time1 - time2;
+  MPI_Reduce( fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+  MPI_Reduce( fy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+  MPI_Reduce( fz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+  MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+  time2 = MPI_Wtime();
+  sys->comm_time += time2 - time1;
 #else
-	sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-					   -pow(sys->sigma/r,6.0));
-	sys->fx[i] += rx/r*ffac;
-	sys->fy[i] += ry/r*ffac;
-	sys->fz[i] += rz/r*ffac;
-      }
-    }
+  sys->epot = epot;
 #endif //USE_MPI
-/*       } */
-/*     } */
-/* #ifdef USE_MPI */
-/*     MPI_Reduce( sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
-/*     MPI_Reduce( sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
-/*     MPI_Reduce( sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
-/*     MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
-/* #endif //USE_MPI */
-  }
 
   return;
 }
