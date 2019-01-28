@@ -42,7 +42,7 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
 		   int * nprint)
 {
 
-  int rem, nloc;
+  //int rem, nloc;
   
   /* Read input file if I'm rank 0 */
   if ( sys->rank == 0 ) {
@@ -106,6 +106,7 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
     
   } //endif ( sys->rank == 0 )
 
+#ifdef USE_MPI
   /* Broadcasting from rank 0 to all what has been read */
   MPI_Bcast( &( sys->natoms ), 1, MPI_INT, 0, sys->comm );
   MPI_Bcast( &( sys->mass ), 1, MPI_DOUBLE, 0, sys->comm );
@@ -115,11 +116,7 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
   MPI_Bcast( &( sys->box ), 1, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( &( sys->nsteps ), 1, MPI_INT, 0, sys->comm );
   MPI_Bcast( &( sys->dt ), 1, MPI_DOUBLE, 0, sys->comm );
-
-  /* rem = sys->natoms%sys->npes; */
-  /* nloc = sys->natoms/sys->npes; */
-  /* sys->nloc = ( sys->rank < rem ) ? nloc + 1 : nloc; */
-  /* sys->offset = ( sys->rank < rem ) ? sys->rank * sys->nloc : sys->rank * sys->nloc + rem; */
+#endif //USE_MPI
 
   return 0;
   
@@ -160,6 +157,7 @@ int readRestart( mdsys_t * sys, char restfile[BLEN] )
       }
   } //endif ( sys->rank == 0 )
 
+#ifdef USE_MPI
   /* Broadcasting from rank 0 to all what has been read */
   MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, sys->comm );
@@ -167,6 +165,7 @@ int readRestart( mdsys_t * sys, char restfile[BLEN] )
   MPI_Bcast( sys->vx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->vy, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->vz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+#endif //USE_MPI
   
   return 0;
   

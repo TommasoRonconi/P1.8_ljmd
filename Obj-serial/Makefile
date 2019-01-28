@@ -15,13 +15,13 @@ dirS = $(dirR)/Obj-serial
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 
 C_FLAGS = $(CFLAGS0) -I$(dirI)
-LD_FLAGS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS)
+LD_FLAGS = -lm -Wl,-rpath,$(dirS)
 
 VPATH=$(dirL)
 
 # Objects:
-OBJ_INTERFACE = $(dirL)/ljmd.o
-OBJ = $(dirL)/velverlet_time_integration.o $(dirL)/output.o $(dirL)/input.o $(dirL)/compute_force.o $(dirL)/data_structure.o $(dirL)/utilities_ljmd.o
+OBJ_INTERFACE = $(dirS)/ljmd.o
+OBJ = $(dirS)/velverlet_time_integration.o $(dirS)/output.o $(dirS)/input.o $(dirS)/compute_force.o $(dirS)/data_structure.o $(dirS)/utilities_ljmd.o
 
 # Shared library:
 LIB = $(dirS)/libLJMD.$(ES)
@@ -39,7 +39,7 @@ $(exe_name): $(OBJ_INTERFACE) libLJMD
 	$(CC) -o $@ $(OBJ_INTERFACE) $(LD_FLAGS) -L$(dirS) -lLJMD 
 
 # general rule
-%.o: %.c
+$(dirS)/%.o: $(dirL)/%.c
 	$(CC) $(C_FLAGS) -c -fPIC $< -o $@
 
 libLJMD: $(OBJ)
@@ -47,16 +47,16 @@ libLJMD: $(OBJ)
 
 # pre-requisites
 # .o
-$(dirL)/ljmd.o: ljmd.c $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+$(dirS)/ljmd.o: $(dirL)/ljmd.c $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
-$(dirL)/velverlet_time_integration.o: $(dirI)/velverlet_time_integration.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+$(dirS)/velverlet_time_integration.o: $(dirI)/velverlet_time_integration.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
-$(dirL)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+$(dirS)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
-$(dirL)/utilities_ljmd.o: $(dirI)/utilities_ljmd.h
+$(dirS)/utilities_ljmd.o: $(dirI)/utilities_ljmd.h
 
-$(dirL)/data_structure.o: $(dirI)/data_structure.h
+$(dirS)/data_structure.o: $(dirI)/data_structure.h
 
-$(dirL)/input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+$(dirS)/input.o: $(dirI)/input.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
-$(dirL)/output.o: $(dirI)/output.h $(dirI)/data_structure.h
+$(dirS)/output.o: $(dirI)/output.h $(dirI)/data_structure.h

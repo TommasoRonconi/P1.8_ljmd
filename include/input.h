@@ -4,6 +4,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include <string.h>
+#ifdef USE_MPI
+#include <mpi.h>
+#endif //USE_MPI
 #include <ctype.h>
 #include <utilities_ljmd.h>
 #include<data_structure.h>

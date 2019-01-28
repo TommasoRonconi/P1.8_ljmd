@@ -29,19 +29,23 @@ void force(mdsys_t *sys)
   int i, j;
 
   /* zero energy and forces */
+#ifdef USE_MPI
   double epot = 0.0;
+  
   azzero( sys->cx, sys->natoms );
   azzero( sys->cy, sys->natoms );
   azzero( sys->cz, sys->natoms );
-  /* sys->epot=0.0; */
-  /* azzero(sys->fx,sys->natoms); */
-  /* azzero(sys->fy,sys->natoms); */
-  /* azzero(sys->fz,sys->natoms); */
-
+  
   /* communicate to all the processes previous step update of positions */
   MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+#else
+  sys->epot=0.0;
+  azzero(sys->fx,sys->natoms);
+  azzero(sys->fy,sys->natoms);
+  azzero(sys->fz,sys->natoms);
+#endif //USE_MPI
 
   /* loop to compute forces */
   for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
@@ -60,24 +64,32 @@ void force(mdsys_t *sys)
       if (r < sys->rcut) {
 	ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
 				  +6*pow(sys->sigma/r,6.0)/r);
-                
+
+#ifdef USE_MPI
 	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
 				      -pow(sys->sigma/r,6.0));
-	/* sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0) */
-	/* 				   -pow(sys->sigma/r,6.0)); */
+#else
+	sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
+					   -pow(sys->sigma/r,6.0));
+#endif //USE_MPI
 
+#ifdef USE_MPI
         sys->cx[i] += rx/r*ffac;
         sys->cy[i] += ry/r*ffac;
         sys->cz[i] += rz/r*ffac;
-	/* sys->fx[i] += rx/r*ffac; */
-	/* sys->fy[i] += ry/r*ffac; */
-	/* sys->fz[i] += rz/r*ffac; */
+#else
+	sys->fx[i] += rx/r*ffac;
+	sys->fy[i] += ry/r*ffac;
+	sys->fz[i] += rz/r*ffac;
+#endif //USE_MPI
       }
     }
+#ifdef USE_MPI
     MPI_Reduce( sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
     MPI_Reduce( sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
     MPI_Reduce( sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
     MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+#endif //USE_MPI
   }
 
   return;
