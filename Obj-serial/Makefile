@@ -12,10 +12,10 @@ dirI = $(dirR)/include
 dirL = $(dirR)/src
 dirS = $(dirR)/Obj-serial
 
-CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
+CFLAGS0 = -std=c99 -fopenmp -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 
 C_FLAGS = $(CFLAGS0) -I$(dirI)
-LD_FLAGS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS)
+LD_FLAGS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS) -fopenmp
 
 VPATH=$(dirL)
 

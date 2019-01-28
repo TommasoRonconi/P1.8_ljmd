@@ -22,6 +22,12 @@
 #include "mynunittest.h"
 #endif //DO_UNIT_TESTS
 
+#if defined (_OPENMP)
+#include <omp.h>
+#else
+#define omp_get_wtime() 0
+#endif
+
 /* main */
 int main( /* int argc, char **argv */ ) 
 {
