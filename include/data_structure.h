@@ -4,9 +4,7 @@
 #include <stdlib.h>
 
 #if defined (_OPENMP)
-#define nthreads omp_get_num_threads()
-#else
-#define nthreads 0
+#include <omp.h>
 #endif
 
 /* structure to hold the complete information 

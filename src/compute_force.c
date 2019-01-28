@@ -33,19 +33,25 @@ void force(mdsys_t *sys)
 	double r,ffac;
 	double rx,ry,rz;
 	double epot = 0;
+	double *fx, *fy, *fz;
 	int i,j;
+	int tid;
 
 	#if defined (_OPENMP)
 	#pragma omp parallel reduction(+:epot)
 	#endif
 
-	double *fx, *fy, *fz;
-	
 	#if defined (_OPENMP)
-		int tid = omp_get_thread_num();
+		tid = omp_get_thread_num();
+		sys->nthreads = omp_get_num_threads();
 	#else
-		int tid = 0;
+		tid = 0;
+		sys.nthreads = 0;
 	#endif
+
+	// #pragma omp for private(i)
+	// for(i = 0; i < sys->nthreads; i++)
+	// printf("Hello from thread number %d", tid);
 
 	fx=sys->fx + (tid*sys->natoms);
 	fy=sys->fy + (tid*sys->natoms);

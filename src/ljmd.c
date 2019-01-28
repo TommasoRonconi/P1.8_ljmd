@@ -36,6 +36,12 @@ int main( /* int argc, char **argv */ )
   FILE *fp,*traj,*erg;
   mdsys_t sys;
 
+  // #if defined (_OPENMP)
+  //   sys.nthreads = omp_get_num_threads();
+  // #else
+  //   sys.nthreads = 0;
+  // #endif
+
   if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
 
   /* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
