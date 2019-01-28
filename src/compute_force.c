@@ -35,15 +35,34 @@ void force(mdsys_t *sys)
 	double epot = 0;
 	int i,j;
 
+	#if defined (_OPENMP)
+	#pragma omp parallel reduction(+:epot)
+	#endif
+
+	double *fx, *fy, *fz;
+	
+	#if defined (_OPENMP)
+		int tid = omp_get_thread_num();
+	#else
+		int tid = 0;
+	#endif
+
+	fx=sys->fx + (tid*sys->natoms);
+	fy=sys->fy + (tid*sys->natoms);
+	fz=sys->fz + (tid*sys->natoms);
+
 	/* zero energy and forces */
 	sys->epot=0.0;
-	azzero(sys->fx,sys->natoms);
-	azzero(sys->fy,sys->natoms);
-	azzero(sys->fz,sys->natoms);
+	azzero(fx,sys->natoms);
+	azzero(fy,sys->natoms);
+	azzero(fz,sys->natoms);
+	// azzero(sys->fx,sys->natoms);
+	// azzero(sys->fy,sys->natoms);
+	// azzero(sys->fz,sys->natoms);
 
-	#if defined (_OPENMP)
-	#pragma omp parallel for private(i, j) reduction(+:epot)
-	#endif
+	
+
+
 	for(i=0; i < (sys->natoms); ++i) {
 		for(j=0; j < (sys->natoms); ++j) {
 

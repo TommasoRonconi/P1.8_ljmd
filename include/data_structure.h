@@ -3,10 +3,17 @@
 
 #include <stdlib.h>
 
+#if defined (_OPENMP)
+#define nthreads omp_get_num_threads()
+#else
+#define nthreads 0
+#endif
+
 /* structure to hold the complete information 
  * about the MD system */
 struct _mdsys
 {
+	int nthreads;
     int natoms, nfi, nsteps;
     double dt, mass, epsilon, sigma, box, rcut;
     double ekin, epot, temp;
