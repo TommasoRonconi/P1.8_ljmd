@@ -26,14 +26,13 @@ void force(mdsys_t *sys)
 {
   double r,ffac;
   double rx,ry,rz;
-  double time1, time2;
   int i, j;
   double epot = 0.0;
-
   double * fx, *fy, *fz;
 
   /* zero energy and forces */
 #ifdef USE_MPI
+  double time1, time2;
 
   fx = sys->cx;
   fy = sys->cy;
@@ -74,7 +73,7 @@ void force(mdsys_t *sys)
       if (r < sys->rcut) {
 	ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
 				  +6*pow(sys->sigma/r,6.0)/r);
-
+	
 	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
 				      -pow(sys->sigma/r,6.0));
 	fx[i] += rx/r*ffac;
@@ -82,8 +81,8 @@ void force(mdsys_t *sys)
 	fz[i] += rz/r*ffac;
       }
     }
-  
-
+  }  
+    
 #ifdef USE_MPI    
   time1 = MPI_Wtime();
   sys->force_time += time1 - time2;
@@ -94,9 +93,12 @@ void force(mdsys_t *sys)
   time2 = MPI_Wtime();
   sys->comm_time += time2 - time1;
 #else
+  /* sys->fx = fx; */
+  /* sys->fy = fy; */
+  /* sys->fz = fz; */
   sys->epot = epot;
 #endif //USE_MPI
-
+  
   return;
 }
 
