@@ -68,16 +68,12 @@ void force(mdsys_t *sys)
 #ifdef USE_MPI
 	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
 				      -pow(sys->sigma/r,6.0));
-#else
-	sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-					   -pow(sys->sigma/r,6.0));
-#endif //USE_MPI
-
-#ifdef USE_MPI
         sys->cx[i] += rx/r*ffac;
         sys->cy[i] += ry/r*ffac;
         sys->cz[i] += rz/r*ffac;
 #else
+	sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
+					   -pow(sys->sigma/r,6.0));
 	sys->fx[i] += rx/r*ffac;
 	sys->fy[i] += ry/r*ffac;
 	sys->fz[i] += rz/r*ffac;
