@@ -13,8 +13,11 @@ serial:
 parallel-MPI:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-$@
 
-library:
+library-serial:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD
+
+library-parallel-MPI:
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel-MPI libLJMD
 
 clean:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel-MPI clean
@@ -29,5 +32,5 @@ check: serial
 check-MPI: parallel-MPI
 	$(MAKE) $(MFLAGS) -C test-mpi check
 
-mytest: library
+mytest: library-serial
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests run
