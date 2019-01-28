@@ -5,7 +5,7 @@ from ctypes import *
 
 
 #impotrt DSo
-dso = CDLL("./lmjd.so")
+dso = CDLL("../Obj-serial/libLJMD.so")
 
 #Create struct
 class _mdsys(Structure):
