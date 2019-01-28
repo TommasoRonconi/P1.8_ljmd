@@ -8,7 +8,9 @@ compiler:
   - gcc
 
 script:
+  - make check
   - make check-MPI
+  - make mytest
 
 notifications:
   slack: mhpc2018-2019:lgG1Ah8lznJPdR2VjXy6Ep2I
