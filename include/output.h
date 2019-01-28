@@ -8,6 +8,8 @@
 // static 
 void output(mdsys_t *sys, FILE *erg, FILE *traj);
 
-void python_output(mdsys_t *sys, const char *trajfile, const char *ergfile);
+mdsys_t python_output(mdsys_t *sys);
+
+void open_python_output(const char *trajfile, const char *ergfile);
 
 #endif //__OUTPUT__
