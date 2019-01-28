@@ -15,6 +15,7 @@ class _mdsys(Structure):
 #pass object type
 dso.test.argtypes = [POINTER(_mdsys)]
 
+
 #Read from input file
 def read_inp(filename):
     """
@@ -46,6 +47,13 @@ def read_rest(filename, start, end):
     return x, y, z
 
 
+def output(print_mdsys, ergfile, trajfile):
+    print(print_mdsys.nfi, " ", print_mdsys.temp, " ",
+          print_mdsys.ekin, "", print_mdsys.epot, "", print_mdsys.epot)
+# printf("% 8d % 20.8f % 20.8f % 20.8f % 20.8f\n", sys->nfi, sys->temp, sys->ekin, sys->epot, sys->ekin + sys->epot)
+    with open(ergfile,"w") as f:
+        f.write()
+
 #get elements from file to the list
 list = read_inp("../examples/argon_108.inp")
 
@@ -61,6 +69,14 @@ def get_array(list, array):
     """
     for i in range(len(list)):
         array[i] = list[i]
+    return array
+
+
+def init_force(array):
+    """
+    """
+    for i in range(len(list)):
+        array[i] = 0.0
     return array
 
 
@@ -89,6 +105,9 @@ array_rz = get_array(rz, array_rz)
 array_vx = get_array(vx, array_vx)
 array_vy = get_array(vy, array_vy)
 array_vz = get_array(vz, array_vz)
+array_fx = init_force(array_fx)
+array_fy = init_force(array_fy)
+array_fz = init_force(array_fz)
 
 # mdsys = _mdsys(natoms=108, nfi=100, nsteps=1000, mass=600, epsilon=200, sigma=78, rcut=90.00, box=500,
 #  dt = 8.9, ekin = 0.0, epot = 0.0, temp = 0.0, rx=array_rx,
@@ -96,7 +115,18 @@ array_vz = get_array(vz, array_vz)
 
 mdsys = _mdsys(natoms=int(list[0]), mass=list[1], epsilon=list[2], sigma=list[3], rcut=list[4], box=list[5],
                nsteps=int(list[9]), dt=list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx,ry=array_ry,
-               rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, fx=array_vx, fy=array_vy, fz=array_vz)
+               rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, fx=array_fx, fy=array_fy, fz=array_fz)
+
+
+for i in range(10):
+    print('{0}   {1}  {2}\n'.format(mdsys.fx[i], mdsys.fy[i], mdsys.fz[i]))
+
+print("\n\n\n")
+dso.velverlet_first_half(byref(mdsys))
+for i in range(10):
+    print('{0}   {1}  {2}\n'.format(mdsys.rx[i], mdsys.ry[i], mdsys.rz[i]))
+    print("\n\n")
+    print('{0}   {1}  {2}\n'.format(mdsys.rx[i], mdsys.ry[i], mdsys.rz[i]))
 
 
 # print(mdsys.natoms)
@@ -110,11 +140,27 @@ mdsys = _mdsys(natoms=int(list[0]), mass=list[1], epsilon=list[2], sigma=list[3]
 # print(mdsys.rx[0])
 
 #dso.test(byref(mdsys))
-dso.azzero(mdsys.fx, mdsys.natoms)
-dso.azzero(mdsys.fy, mdsys.natoms)
-dso.azzero(mdsys.fz, mdsys.natoms)
-dso.force(byref(mdsys))
-dso.ekin(byref(mdsys))
-dso.velverlet_first_half(byref(mdsys))
-dso.velverlet_second_half(byref(mdsys))
+# dso.azzero(mdsys.fx, mdsys.natoms)
+# dso.azzero(mdsys.fy, mdsys.natoms)
+# dso.azzero(mdsys.fz, mdsys.natoms)
+# print("Starting simulation with {} atoms for {} steps.\n",
+#       mdsys.natoms, mdsys.nsteps)
+# print("     NFI            TEMP            EKIN                 EPOT              ETOT\n")
+# dso.python_output(byref(mdsys), 'argon_108.xyz', 'argon_108.dat')
+# dso.force(byref(mdsys))
+# dso.ekin(byref(mdsys))
+# mdsys.nfi = 1
+# nprint =100
+# for i in range(mdsys.nfi,mdsys.nsteps):
+#     if ((mdsys.nfi % nprint) == 0):
+#         dso.python_output(byref(mdsys), 'argon_108.xyz', 'argon_108.dat')
+#         dso.velverlet_first_half(byref(mdsys))
+#         dso.force(byref(mdsys))
+#         dso.velverlet_second_half(byref(mdsys))
+#         dso.ekin(byref(mdsys))
+
+# print("Simulation Done.\n")
+
+
+#dso.python_output(byref(mdsys),'argon_108.xyz', 'argon_108.dat')
 #dso.output(mdsys, 'argon_108.xyz', 'argon_108.dat')
