@@ -24,8 +24,6 @@
 
 #if defined (_OPENMP)
 #include <omp.h>
-#else
-#define omp_get_wtime() 0
 #endif
 
 /* main */
@@ -35,12 +33,6 @@ int main( /* int argc, char **argv */ )
   char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
   FILE *fp,*traj,*erg;
   mdsys_t sys;
-
-  // #if defined (_OPENMP)
-  //   sys.nthreads = omp_get_num_threads();
-  // #else
-  //   sys.nthreads = 0;
-  // #endif
 
   if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
 

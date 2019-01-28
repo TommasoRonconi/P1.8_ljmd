@@ -32,50 +32,35 @@ void force(mdsys_t *sys)
 {
 	double r,ffac;
 	double rx,ry,rz;
-	double epot = 0;
-	double *fx, *fy, *fz;
+	double epot = 0.0;
 	int i,j;
-	int tid;
 
 	#if defined (_OPENMP)
-	#pragma omp parallel reduction(+:epot)
+	#pragma omp parallel
 	#endif
 
-	#if defined (_OPENMP)
-		tid = omp_get_thread_num();
-		sys->nthreads = omp_get_num_threads();
-	#else
-		tid = 0;
-		sys.nthreads = 0;
-	#endif
-
-	// #pragma omp for private(i)
-	// for(i = 0; i < sys->nthreads; i++)
-	// printf("Hello from thread number %d", tid);
-
-	fx=sys->fx + (tid*sys->natoms);
-	fy=sys->fy + (tid*sys->natoms);
-	fz=sys->fz + (tid*sys->natoms);
+	// #if defined (_OPENMP)
+	// 	sys->nthreads = omp_get_num_threads();
+	// #else
+	// 	sys->nthreads = 1;
+	// #endif
 
 	/* zero energy and forces */
 	sys->epot=0.0;
-	azzero(fx,sys->natoms);
-	azzero(fy,sys->natoms);
-	azzero(fz,sys->natoms);
-	// azzero(sys->fx,sys->natoms);
-	// azzero(sys->fy,sys->natoms);
-	// azzero(sys->fz,sys->natoms);
-
-	
+	azzero(sys->fx,sys->natoms);
+	azzero(sys->fy,sys->natoms);
+	azzero(sys->fz,sys->natoms);
 
 
+	#if defined (_OPENMP)
+	#pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
+	#endif
 	for(i=0; i < (sys->natoms); ++i) {
 		for(j=0; j < (sys->natoms); ++j) {
-
+		
 			/* particles have no interactions with themselves */
 			if (i==j) continue;
-						
-			/* get distance between particle i and j */
+			
 			rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
 			ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
 			rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
