@@ -96,7 +96,7 @@ array_vz = get_array(vz, array_vz)
 
 mdsys = _mdsys(natoms=int(list[0]), mass=list[1], epsilon=list[2], sigma=list[3], rcut=list[4], box=list[5],
                nsteps=int(list[9]), dt=list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx,ry=array_ry,
-               rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz)
+               rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, fx=array_vx, fy=array_vy, fz=array_vz)
 
 
 # print(mdsys.natoms)
@@ -110,8 +110,11 @@ mdsys = _mdsys(natoms=int(list[0]), mass=list[1], epsilon=list[2], sigma=list[3]
 # print(mdsys.rx[0])
 
 #dso.test(byref(mdsys))
+dso.azzero(mdsys.fx, mdsys.natoms)
+dso.azzero(mdsys.fy, mdsys.natoms)
+dso.azzero(mdsys.fz, mdsys.natoms)
 dso.force(byref(mdsys))
 dso.ekin(byref(mdsys))
 dso.velverlet_first_half(byref(mdsys))
-velverlet_second_half(byref(mdsys))
-dso.output(mdsys, 'argon_108.xyz', 'argon_108.dat')
+dso.velverlet_second_half(byref(mdsys))
+#dso.output(mdsys, 'argon_108.xyz', 'argon_108.dat')

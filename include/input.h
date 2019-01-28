@@ -14,4 +14,6 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN], char (*
 
 int readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN]);
 
+void pythonreadRestart(mdsys_t *ptr_sys, char restfile[BLEN]);
+
 #endif //__INPUT__

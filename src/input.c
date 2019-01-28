@@ -138,3 +138,8 @@ int readRestart(FILE *fp, mdsys_t *ptr_sys, char restfile[BLEN])
 
     return 0;
 }
+
+void pythonreadRestart(mdsys_t *ptr_sys, char restfile[BLEN])
+{
+  
+}
