@@ -116,10 +116,10 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
   MPI_Bcast( &( sys->nsteps ), 1, MPI_INT, 0, sys->comm );
   MPI_Bcast( &( sys->dt ), 1, MPI_DOUBLE, 0, sys->comm );
 
-  rem = sys->natoms%sys->npes;
-  nloc = sys->natoms/sys->npes;
-  sys->nloc = ( sys->rank < rem ) ? nloc + 1 : nloc;
-  sys->offset = ( sys->rank < rem ) ? sys->rank * sys->nloc : sys->rank * sys->nloc + rem;
+  /* rem = sys->natoms%sys->npes; */
+  /* nloc = sys->natoms/sys->npes; */
+  /* sys->nloc = ( sys->rank < rem ) ? nloc + 1 : nloc; */
+  /* sys->offset = ( sys->rank < rem ) ? sys->rank * sys->nloc : sys->rank * sys->nloc + rem; */
 
   return 0;
   
