@@ -3,14 +3,15 @@ SHELL=/bin/sh
 
 MPIC = mpicc
 
-exe_name = $(dirR)/ljmd-parallel-mpi.x
-
 ES = so
 
 dirR = $(PWD)/..
 dirI = $(dirR)/include
 dirL = $(dirR)/src
 dirS = $(dirR)/Obj-parallel-MPI
+dirEXE = $(dirR)
+
+exe_name = $(dirEXE)/ljmd-parallel-mpi.x
 
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 

@@ -3,14 +3,15 @@ SHELL=/bin/sh
 
 CC=gcc
 
-exe_name = $(dirR)/ljmd-serial.x
-
 ES = so
 
 dirR = $(PWD)/..
 dirI = $(dirR)/include
 dirL = $(dirR)/src
 dirS = $(dirR)/Obj-serial
+dirEXE = $(dirR)
+
+exe_name = $(dirEXE)/ljmd-serial.x
 
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 

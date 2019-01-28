@@ -3,15 +3,16 @@ SHELL=/bin/sh
 ############################################
 # derived makefile variables
 OBJ_SERIAL=$(SRC:src/%.f90=Obj-serial/%.o)
+PREFIX=$(PWD)
 ############################################
 
 default: serial
 
 serial:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-$@
+	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
 parallel-MPI:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-$@
+	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
 library-serial:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD
