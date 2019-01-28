@@ -23,6 +23,7 @@ struct _mdsys
   /* variables to manage MPI parallelization */
   int rank, npes;
 #ifdef USE_MPI
+  double comm_time, force_time, overhead;
   MPI_Comm comm;
 #endif //USE_MPI
   

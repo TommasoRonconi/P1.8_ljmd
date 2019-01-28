@@ -26,6 +26,7 @@ void force(mdsys_t *sys)
 {
   double r,ffac;
   double rx,ry,rz;
+  double time1, time2;
   int i, j;
 
   /* zero energy and forces */
@@ -35,11 +36,14 @@ void force(mdsys_t *sys)
   azzero( sys->cx, sys->natoms );
   azzero( sys->cy, sys->natoms );
   azzero( sys->cz, sys->natoms );
-  
+
+  time1 = MPI_Wtime();
   /* communicate to all the processes previous step update of positions */
   MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+  time2 = MPI_Wtime();
+  sys->comm_time += time2 - time1;
 #else
   sys->epot=0.0;
   azzero(sys->fx,sys->natoms);
@@ -71,21 +75,33 @@ void force(mdsys_t *sys)
         sys->cx[i] += rx/r*ffac;
         sys->cy[i] += ry/r*ffac;
         sys->cz[i] += rz/r*ffac;
+      }
+    }
+    time1 = MPI_Wtime();
+    sys->force_time += time1 - time2;
+    MPI_Reduce( sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    MPI_Reduce( sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    MPI_Reduce( sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+    time2 = MPI_Wtime();
+    sys->comm_time += time2 - time1;
 #else
 	sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
 					   -pow(sys->sigma/r,6.0));
 	sys->fx[i] += rx/r*ffac;
 	sys->fy[i] += ry/r*ffac;
 	sys->fz[i] += rz/r*ffac;
-#endif //USE_MPI
       }
     }
-#ifdef USE_MPI
-    MPI_Reduce( sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    MPI_Reduce( sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    MPI_Reduce( sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-    MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
 #endif //USE_MPI
+/*       } */
+/*     } */
+/* #ifdef USE_MPI */
+/*     MPI_Reduce( sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
+/*     MPI_Reduce( sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
+/*     MPI_Reduce( sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
+/*     MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm ); */
+/* #endif //USE_MPI */
   }
 
   return;

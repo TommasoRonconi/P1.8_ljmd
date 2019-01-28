@@ -98,6 +98,7 @@ int main( int argc, char **argv )
     printf("Simulation Done.\n");
     fclose(erg);
     fclose(traj);
+    fprintf( stderr, "%f\t%f\t%f\n", sys.overhead, sys.comm_time, sys.force_time );
   }
 
   /* free memory allocated */
