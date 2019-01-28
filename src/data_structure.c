@@ -12,6 +12,11 @@ void allocate_sys_arrays ( mdsys_t * const sys ) {
   sys->vy = (double *) malloc( sys->natoms * sizeof(double) );
   sys->vz = (double *) malloc( sys->natoms * sizeof(double) );
 
+  // allocate support
+  sys->cx = (double *) malloc( sys->natoms * sizeof(double) );
+  sys->cy = (double *) malloc( sys->natoms * sizeof(double) );
+  sys->cz = (double *) malloc( sys->natoms * sizeof(double) );
+
   // allocate forces
   sys->fx = (double *) malloc( sys->natoms * sizeof(double) );
   sys->fy = (double *) malloc( sys->natoms * sizeof(double) );
@@ -32,6 +37,11 @@ void free_sys_arrays ( mdsys_t * const sys ) {
   free( sys->vx );
   free( sys->vy );
   free( sys->vz );
+  
+  // free support
+  free( sys->cx );
+  free( sys->cy );
+  free( sys->cz );
   
   // free forces
   free( sys->fx );

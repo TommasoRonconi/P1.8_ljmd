@@ -13,10 +13,11 @@ struct _mdsys
   double ekin, epot, temp;
   double *rx, *ry, *rz;
   double *vx, *vy, *vz;
+  double *cx, *cy, *cz;
   double *fx, *fy, *fz;
 
   /* variables to manage MPI parallelization */
-  int rank, npes, nloc, offset;
+  int rank, npes;
   MPI_Comm comm;
   
 };
