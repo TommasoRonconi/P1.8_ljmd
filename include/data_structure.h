@@ -10,9 +10,10 @@
 /* structure to hold the complete information 
  * about the MD system */
 struct _mdsys
-{
+{	
 	int nthreads;
     int natoms, nfi, nsteps;
+    float time_omp;
     double dt, mass, epsilon, sigma, box, rcut;
     double ekin, epot, temp;
     double *rx, *ry, *rz;
