@@ -42,7 +42,6 @@ int main( int argc, char **argv )
     MPI_Abort( MPI_COMM_WORLD, 1 );
     return 1;
   }
-  printf( "Hello from process %d of %d\nnloc = %d, offset = %d\n", sys.rank, sys.npes, sys.nloc, sys.offset );
 
   /* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
   allocate_sys_arrays( &sys );
@@ -52,9 +51,6 @@ int main( int argc, char **argv )
     MPI_Abort( MPI_COMM_WORLD, 2 );
     return 2;
   }
-
-  if ( rank == 1 )
-    printf("%p\t%p\n", sys.rx, sys.rx+sys.offset);
   
   /* initialize forces and energies.*/
   sys.nfi=0;
