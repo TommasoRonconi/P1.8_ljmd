@@ -89,7 +89,7 @@ void test(mdsys_t *ptr_sys)
 
   for (int i = 0; i < 4; ++i)
   {
-    printf("%.10lf \t %.10lf \t%.10lf \n", sys.vx[i], sys.vy[i], sys.vz[i]);
+    printf("%.15lf \t %.15lf \t%.15lf \n", sys.vx[i], sys.vy[i], sys.vz[i]);
   }
   azzero(sys.vx, 4);
   azzero(sys.rx, 4);
@@ -101,13 +101,13 @@ void test(mdsys_t *ptr_sys)
   printf("Afrter zeroing:\n\n");
   for (int i = 0; i < 4; ++i)
   {
-    printf("%.10lf \t %.10lf \t%.10lf \n", sys.rx[i], sys.ry[i], sys.rz[i]);
+    printf("%.15lf \t %.15lf \t%.15lf \n", sys.rx[i], sys.ry[i], sys.rz[i]);
   }
   printf("\n\n");
   printf("Velocity:: \n\n");
 
   for (int i = 0; i < 4; ++i)
   {
-    printf("%.10lf \t %.10lf \t%.10lf \n", sys.vx[i], sys.vy[i], sys.vz[i]);
+    printf("%.15lf \t %.15lf \t%.15lf \n", sys.vx[i], sys.vy[i], sys.vz[i]);
   }
 }
