@@ -48,7 +48,7 @@ void force(mdsys_t *sys)
 #endif //USE_MPI
 
   /* loop to compute forces */
-  for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
+  for( i = sys->rank; i < (sys->natoms) - 1; i += sys->npes ) {
     for(j=0; j < (sys->natoms); ++j) {
 
       /* particles have no interactions with themselves */
