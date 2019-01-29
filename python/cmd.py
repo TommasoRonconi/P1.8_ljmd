@@ -1,3 +1,4 @@
+import subprocess
 import argparse
 
 parser = argparse.ArgumentParser(prog="ljmd.py", description="Used to calculate distance between particles:", epilog="The program is implemented using omp, mpi and serial verion. You are alo able to run mpi and openmp using the momp.")
@@ -14,13 +15,22 @@ group.add_argument("-mo", "--momp", action="store_true", help="run with omp + mp
 args=parser.parse_args()
 
 if(args.serial):
-    print("I am printing from serial:", args.serial)
+    print("Use from serial:", args.serial)
+    subprocess.run(["python", "ljmd.py"])
 elif (args.mpi):
-    print("I am printing from mpi: " ,args.mpi)
+    print("Use using mpi: ", args.mpi)
+    subprocess.run(["python", "ljmd.py"])
 elif (args.omp):
-    print("We are printing from omp: ",args.omp)
+    #export OMP_NUM_THREADS = 2 & & python omp_ljmd.py
+    print("Use from omp: ",args.omp)
+    subprocess.run(["python", "ljmd.py"])
 elif (args.momp):
-    print("I am printing from momp: ",args.momp)
+    print("Use using mpi + omp: ",args.momp)
+    subprocess.run(["python", "ljmd.py"])
+else:
+    print("Just decided to run serial version.\n")
+    subprocess.run(["python", "ljmd.py"])
+
 
 
 

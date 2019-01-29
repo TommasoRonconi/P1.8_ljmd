@@ -133,7 +133,8 @@ OPT += -DTHIRD_LAW
 # Variables:
 
 MPIC = mpicc
-CC = gcc
+#CC = gcc
+CC = clang
 
 ES = so
 
