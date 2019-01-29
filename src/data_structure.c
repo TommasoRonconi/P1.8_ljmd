@@ -3,11 +3,13 @@
 void initialize ( mdsys_t * const sys ) {
 
 #ifdef USE_MPI
-  int * argc_dummy;
-  char *** argv_dummy;
-  MPI_Init( argc_dummy, argv_dummy );
+  int * argc_dummy = NULL;
+  char *** argv_dummy = NULL;
+  MPI_Init(argc_dummy, argv_dummy);
   MPI_Comm_size( MPI_COMM_WORLD, &sys->npes );
-  MPI_Comm_rank( MPI_COMM_WORLD, &sys->rank );
+  MPI_Comm_rank(MPI_COMM_WORLD, &sys->rank);
+  sys->rcut = 23.90;
+
 #else
   sys->rank = 0;
   sys->npes = 1;  
