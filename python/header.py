@@ -5,6 +5,7 @@
 """
 from ctypes import *
 import argparse
+import sys 
 
 #dynamic libraries
 mpi_dso = CDLL("../Obj-parallel/libLJMD-mpi.so")
@@ -23,6 +24,10 @@ class _mdsys(Structure):
 #pass object type
 dso.python_output.argtypes = [POINTER(_mdsys)]
 dso.python_output.restype = _mdsys
+
+
+#accept input files
+inputfile = sys.argv[1]
 
 #Read from input file
 def read_inp(filename):
@@ -102,7 +107,7 @@ def handle_output(_output, trajfile, ergfile):
 
 #get elements from file to the list
 conf_dir = "../examples/"
-inp_path = conf_dir + "argon_108.inp"
+inp_path = conf_dir + inputfile
 raw_list = read_inp(inp_path)
 rest_path = conf_dir + raw_list[6]
 

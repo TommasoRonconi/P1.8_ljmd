@@ -4,13 +4,16 @@
 
 """
 from ctypes import *
-from  header  import * 
+from header import *
 import argparse
 
 #Create struct for mpi
+
+
 class _mpi_mdsys(Structure):
     _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)), ("rz", POINTER(c_double)), ("vx", POINTER(
         c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("cx", POINTER(c_double)), ("cy", POINTER(c_double)), ("cz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int), ("comm_time", c_double), ("force_time", c_double), ("overhead", c_double)]
+
 
 #get elements from file to the list
 conf_dir = "../examples/"
@@ -59,7 +62,8 @@ array_cy = init_force(array_cy)
 array_cz = init_force(array_cz)
 
 
-mpi_sys = _mpi_mdsys(natoms=0, mass=0.0, epsilon=0.00, sigma=0.0, rcut=0.0,box=0.0, nsteps=0, dt=0.0, nfi=0, ekin=0.0,epot=0.0, temp=0.0)
+mpi_sys = _mpi_mdsys(natoms=0, mass=0.0, epsilon=0.00, sigma=0.0, rcut=0.0,
+                     box=0.0, nsteps=0, dt=0.0, nfi=0, ekin=0.0, epot=0.0, temp=0.0)
 elem_size = c_double*108
 
 tmp_sys = _mpi_mdsys()
@@ -80,7 +84,8 @@ if (tmp_sys.rank == 0):
     vx, vy, vz = read_rest(rest_path, v_start, v_end)
 
     #element size
-    mpi_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rank=tmp_sys.rank, npes=tmp_sys.npes, comm_time=0.0, force_time=0.0, overhead=0.0)
+    mpi_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(
+        raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rank=tmp_sys.rank, npes=tmp_sys.npes, comm_time=0.0, force_time=0.0, overhead=0.0)
 
 mpi_dso.broadcast_values(byref(mpi_sys))
 
