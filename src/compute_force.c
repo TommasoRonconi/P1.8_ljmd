@@ -29,7 +29,7 @@ void force(mdsys_t *sys)
   int i, j;
   double epot = 0.0;
   double * fx, *fy, *fz;
-
+  
   /* zero energy and forces */
 #ifdef USE_MPI
   double time1, time2;

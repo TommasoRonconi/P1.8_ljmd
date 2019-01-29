@@ -20,7 +20,7 @@ elif (args.mpi):
 elif (args.omp):
     print("We are printing from omp: ",args.omp)
 elif (args.momp):
-    print("I am printing from momp: ",args.serial)
+    print("I am printing from momp: ",args.momp)
 
 
 
