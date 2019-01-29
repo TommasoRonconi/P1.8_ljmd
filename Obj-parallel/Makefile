@@ -47,11 +47,24 @@ LIB-MPI-OMP = $(dirS)/libLJMD-mpi-omp.$(ES)
 
 default: $(exe_name-mpi) $(exe_name-omp) $(exe_name-mpi-omp)
 
+$(dirO-MPI):
+	mkdir -p $@
+
+$(dirO-OMP):
+	mkdir -p $@
+
+$(dirO-MPI-OMP):
+	mkdir -p $@
+
 clean_garbage:
 	rm -f *.mod *.o $(dirL)/*~ $(dirI)/*~ $(dirS)/*~ $(dirO-MPI)/*~ $(dirO-OMP)/*~ $(dirO-MPI-OMP)/*~
 
 clean: clean_garbage
 	rm -f $(dirR)/ljmd-parallel-mpi.x $(OBJ-MPI) $(OBJ_INTERFACE-MPI) $(OBJ-OMP) $(OBJ_INTERFACE-OMP) $(OBJ-MPI-OMP) $(OBJ_INTERFACE-MPI-OMP) $(LIB-MPI) $(LIB-OMP) $(LIB-MPI-OMP)
+
+# mkdir
+$(%):
+	mkdir -p $(%)
 
 # linker rules
 $(exe_name-mpi): $(OBJ_INTERFACE-MPI) libLJMD-MPI 
@@ -62,11 +75,11 @@ $(exe_name-mpi-omp): $(OBJ_INTERFACE-MPI-OMP) libLJMD-MPI-OMP
 	$(MPIC) -o $@ $(OBJ_INTERFACE-MPI-OMP) $(LD_FLAGS) -Wl,-rpath,$(dirO-MPI-OMP) -fopenmp -L$(dirS) -lLJMD-mpi-omp
 
 # general rules
-$(dirO-MPI)/%.o: $(dirL)/%.c
+$(dirO-MPI)/%.o: $(dirL)/%.c $(dirO-MPI)
 	$(MPIC) $(C_FLAGS) -c -fPIC $< -o $@ -DUSE_MPI
-$(dirO-OMP)/%.o: $(dirL)/%.c
+$(dirO-OMP)/%.o: $(dirL)/%.c $(dirO-OMP)
 	$(CC) $(C_FLAGS) -fopenmp -c -fPIC $< -o $@
-$(dirO-MPI-OMP)/%.o: $(dirL)/%.c
+$(dirO-MPI-OMP)/%.o: $(dirL)/%.c $(dirO-MPI-OMP)
 	$(MPIC) $(C_FLAGS) -fopenmp -c -fPIC $< -o $@ -DUSE_MPI
 
 # libraries rules
