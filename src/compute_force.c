@@ -44,6 +44,7 @@ void force(mdsys_t *sys)
   int i, j;
   double epot = 0.0;
   double * fx, *fy, *fz;
+
   double c12, c6;
   double r6, rinv;
 

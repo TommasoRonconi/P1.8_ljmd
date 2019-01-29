@@ -1,4 +1,5 @@
 #include<input.h>
+#include<assert.h>
 
 int get_a_line(FILE *fp, char * buf)
 {
@@ -6,9 +7,9 @@ int get_a_line(FILE *fp, char * buf)
     int i = 0;
 	
     /* read a line and cut of comments and blanks */
+    assert(fp != NULL);
     if (fgets(tmp, BLEN, fp))
     {
-
         ptr = strchr(tmp, '#');
         if (ptr)
             *ptr = '\0';
@@ -113,11 +114,13 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
 }
 
 void broadcast_values ( mdsys_t * sys ) {
-
+  printf("from mpi ");
 #ifdef USE_MPI
   /* Broadcasting from rank 0 to all what has been read */
+  printf("test1");
   MPI_Bcast( &( sys->natoms ), 1, MPI_INT, 0, MPI_COMM_WORLD );
-  MPI_Bcast( &( sys->mass ), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD );
+  printf("%d\n",sys->natoms);
+  MPI_Bcast(&(sys->mass), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Bcast( &( sys->epsilon ), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   MPI_Bcast( &( sys->sigma ), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   MPI_Bcast( &( sys->rcut ), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD );
@@ -186,3 +189,4 @@ void broadcast_arrays ( mdsys_t * sys ) {
   return;
   
 }
+

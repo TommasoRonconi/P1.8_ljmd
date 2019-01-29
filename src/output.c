@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<data_structure.h>
+#include <utilities_ljmd.h>
 
 /* static  */
 void output(mdsys_t *sys, FILE *erg, FILE *traj)
@@ -13,4 +14,16 @@ void output(mdsys_t *sys, FILE *erg, FILE *traj)
     {
         fprintf(traj, "Ar  %20.8f %20.8f %20.8f\n", sys->rx[i], sys->ry[i], sys->rz[i]);
     }
+}
+mdsys_t python_output(mdsys_t *ptr_sys)
+{
+    return *ptr_sys;
+}
+
+void open_python_output(const char *trajfile, const char *ergfile)
+{
+    printf("b4 seg\n");
+    printf("%s",trajfile);
+    printf("%s",ergfile);
+    printf("after seg\n");
 }
