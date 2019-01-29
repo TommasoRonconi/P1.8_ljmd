@@ -34,6 +34,8 @@ int main( /* int argc, char **argv */ )
 	FILE *fp,*traj,*erg;
 	mdsys_t sys;
 
+	sys.time_omp = 0.0;
+
 	if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
 
 	/* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */

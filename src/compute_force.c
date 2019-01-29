@@ -35,8 +35,6 @@ void force(mdsys_t *sys)
 	double epot = 0.0;
 	int i,j;
 
-	sys->time_omp = 0.0;
-
 /* zero energy and forces */
 	sys->epot=0.0;
 	azzero(sys->fx,sys->natoms);
@@ -44,8 +42,8 @@ void force(mdsys_t *sys)
 	azzero(sys->fz,sys->natoms);
 
 	#if defined (_OPENMP)
-	float t_start = 0.0;
-	float t_end = 0.0;
+	double t_start = 0.0;
+	double t_end = 0.0;
 	#endif
 
 	#if defined (_OPENMP)
@@ -87,8 +85,8 @@ void force(mdsys_t *sys)
 	}
 
 	#if defined (_OPENMP)
-	t_end += omp_get_wtime();
-	sys->time_omp += t_end - t_start;
+	t_end = omp_get_wtime();
+	sys->time_omp += (t_end - t_start);
 	#endif
 
 	sys->epot = epot;
