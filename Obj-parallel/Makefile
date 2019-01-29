@@ -60,7 +60,7 @@ clean_garbage:
 	rm -f *.mod *.o $(dirL)/*~ $(dirI)/*~ $(dirS)/*~ $(dirO-MPI)/*~ $(dirO-OMP)/*~ $(dirO-MPI-OMP)/*~
 
 clean: clean_garbage
-	rm -f $(dirR)/ljmd-parallel-mpi.x $(OBJ-MPI) $(OBJ_INTERFACE-MPI) $(OBJ-OMP) $(OBJ_INTERFACE-OMP) $(OBJ-MPI-OMP) $(OBJ_INTERFACE-MPI-OMP) $(LIB-MPI) $(LIB-OMP) $(LIB-MPI-OMP)
+	rm -f $(exe_name-mpi) $(exe_name-mpi-omp) $(exe_name-omp) $(OBJ-MPI) $(OBJ_INTERFACE-MPI) $(OBJ-OMP) $(OBJ_INTERFACE-OMP) $(OBJ-MPI-OMP) $(OBJ_INTERFACE-MPI-OMP) $(LIB-MPI) $(LIB-OMP) $(LIB-MPI-OMP)
 
 # mkdir
 $(%):

@@ -7,12 +7,12 @@ PREFIX=$(PWD)
 nproc=1
 ############################################
 
-default: serial
+default: serial parallel
 
 serial:
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
-parallel-MPI:
+parallel:
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-parallel
 
 library-serial:
@@ -20,6 +20,12 @@ library-serial:
 
 library-parallel-MPI:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI
+
+library-parallel-OMP:
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-OMP
+
+library-parallel-MPI-OMP:
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI-OMP
 
 clean:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel clean
@@ -31,7 +37,7 @@ clean:
 check: serial
 	$(MAKE) $(MFLAGS) -C examples check
 
-check-MPI: parallel-MPI
+check-MPI: parallel
 	$(MAKE) $(MFLAGS) -C test-mpi check nproc=$(nproc)
 
 mytest: library-serial
