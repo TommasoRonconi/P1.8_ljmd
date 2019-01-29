@@ -1,3 +1,4 @@
+
 #ifndef __POTENTIALS__
 #define __POTENTIALS__
 
