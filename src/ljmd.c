@@ -69,16 +69,8 @@ int main( /* int argc, char **argv */ )
 		velverlet_first_half(&sys);
 
 		/* compute forces and potential energy */
-		#if defined (_OPENMP)
-		float t_start = omp_get_wtime();
-		#endif
-		force(&sys);
 
-		#if defined (_OPENMP)
-		float t_end = omp_get_wtime();
-		float t_tot = t_end - t_start;
-		sys.time_omp = t_tot;
-		#endif
+		force(&sys);
 
 		/* propagate system and recompute energies by another half step*/  
 		velverlet_second_half(&sys); 

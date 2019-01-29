@@ -33,39 +33,30 @@ void force(mdsys_t *sys)
 	double r,ffac;
 	double rx,ry,rz;
 	double epot = 0.0;
-
-	// #if defined (_OPENMP)
-	// float t_start = 0.0;
-	// float t_end = 0.0;
-	// float t_tot = 0.0;
-	// #endif
-
-	// #if defined (_OPENMP)
-	// int tid = omp_get_thread_num();
-	// #else
-	// int tid = 0;
-	// #endif
-
 	int i,j;
 
-	#if defined (_OPENMP)
-	#pragma omp parallel
-	#endif
+	sys->time_omp = 0.0;
 
-	/* zero energy and forces */
+/* zero energy and forces */
 	sys->epot=0.0;
 	azzero(sys->fx,sys->natoms);
 	azzero(sys->fy,sys->natoms);
 	azzero(sys->fz,sys->natoms);
 
 	#if defined (_OPENMP)
+	float t_start = 0.0;
+	float t_end = 0.0;
+	#endif
+
+	#if defined (_OPENMP)
+	#pragma omp parallel
 	sys->nthreads = omp_get_num_threads();
 	#else
 	sys->nthreads = 1;
 	#endif
 
-
 	#if defined (_OPENMP)
+	t_start = omp_get_wtime();
 	#pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
 	#endif
 	for(i=0; i < (sys->natoms); ++i) {
@@ -82,24 +73,11 @@ void force(mdsys_t *sys)
 			/* compute force and energy if within cutoff */
 			if (r < sys->rcut) {
 				
-				// #if defined (_OPENMP)
-				// t_start = omp_get_wtime();
-				// #endif
-
 				ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
 					+6*pow(sys->sigma/r,6.0)/r);
 				
 				epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
 						 -pow(sys->sigma/r,6.0));
-
-				// #if defined (_OPENMP)
-				// t_end = omp_get_wtime();
-				// #endif
-
-				// #if defined (_OPENMP)
-				// t_tot += t_end - t_start;
-				// printf("%f\n", t_tot);
-				// #endif
 
 				sys->fx[i] += rx/r*ffac;
 				sys->fy[i] += ry/r*ffac;
@@ -108,9 +86,10 @@ void force(mdsys_t *sys)
 		}
 	}
 
-	// #if defined (_OPENMP)
-	// sys->time_omp = t_tot / sys->nthreads;
-	// #endif
+	#if defined (_OPENMP)
+	t_end += omp_get_wtime();
+	sys->time_omp += t_end - t_start;
+	#endif
 
 	sys->epot = epot;
 
