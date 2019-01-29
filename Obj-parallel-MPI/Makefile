@@ -15,7 +15,7 @@ exe_name = $(dirEXE)/ljmd-parallel-mpi.x
 
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 
-C_FLAGS = $(CFLAGS0) -I$(dirI)
+C_FLAGS = $(CFLAGS0) -I$(dirI) -DAVOID_MATH -DTHIRD_LAW
 LD_FLAGS = -lm -Wl,-rpath,$(dirS)
 
 VPATH=$(dirL)
