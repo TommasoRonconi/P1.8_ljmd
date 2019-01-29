@@ -16,6 +16,7 @@ exe_name = $(dirEXE)/ljmd-serial.x
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 
 C_FLAGS = $(CFLAGS0) -I$(dirI)
+
 LD_FLAGS = -lm -Wl,-rpath,$(dirS)
 
 VPATH=$(dirL)

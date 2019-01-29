@@ -13,16 +13,16 @@ serial:
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
 parallel-MPI:
-	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
+	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-parallel
 
 library-serial:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD
 
 library-parallel-MPI:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel-MPI libLJMD
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI
 
 clean:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel-MPI clean
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel clean
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean
 	$(MAKE) $(MFLAGS) -C test-mpi clean

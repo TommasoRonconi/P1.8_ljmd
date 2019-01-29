@@ -1,5 +1,9 @@
 #include <compute_force.h>
 
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
 
 // =======================================================================
 
@@ -7,14 +11,14 @@
 /* static void ekin(mdsys_t *sys) */
 void ekin(mdsys_t *sys)
 {   
-  int i;
+	int i;
 
-  sys->ekin=0.0;
-  for (i=0; i<sys->natoms; ++i) {
-    sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
-  }
-  sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
-  
+	sys->ekin=0.0;
+	for (i=0; i<sys->natoms; ++i) {
+		sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
+	}
+	sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
+	
 }
 
 
@@ -32,19 +36,15 @@ void force(mdsys_t *sys)
 
   /* zero energy and forces */
 #ifdef USE_MPI
-  double time1, time2;
 
   fx = sys->cx;
   fy = sys->cy;
   fz = sys->cz;
 
-  time1 = MPI_Wtime();
   /* communicate to all the processes previous step update of positions */
   MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
-  time2 = MPI_Wtime();
-  sys->comm_time += time2 - time1;
   
 #else
   /* sys->epot=0.0; */
@@ -56,7 +56,17 @@ void force(mdsys_t *sys)
   azzero( fy, sys->natoms );
   azzero( fz, sys->natoms );
 
+  /* #if defined (_OPENMP) */
+  /* #pragma omp parallel */
+  /* sys->nthreads = omp_get_num_threads(); */
+  /* #else */
+  /* sys->nthreads = 1; */
+  /* #endif */
+
   /* loop to compute forces */
+#if defined (_OPENMP)
+#pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
+#endif
   for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
     for(j=0; j < (sys->natoms); ++j) {
 
@@ -84,22 +94,16 @@ void force(mdsys_t *sys)
   }  
     
 #ifdef USE_MPI    
-  time1 = MPI_Wtime();
-  sys->force_time += time1 - time2;
   MPI_Reduce( fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   MPI_Reduce( fy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   MPI_Reduce( fz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
-  time2 = MPI_Wtime();
-  sys->comm_time += time2 - time1;
 #else
-  /* sys->fx = fx; */
-  /* sys->fy = fy; */
-  /* sys->fz = fz; */
   sys->epot = epot;
 #endif //USE_MPI
   
   return;
+
 }
 
 

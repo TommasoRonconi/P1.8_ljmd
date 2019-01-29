@@ -13,6 +13,9 @@
 #ifdef USE_MPI
 #include <mpi.h>
 #endif //USE_MPI
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
 #include <utilities_ljmd.h>
 #include <data_structure.h>
 #include <compute_force.h>
@@ -45,6 +48,7 @@ int main( /* int argc, char **argv */ )
   /* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
   allocate_sys_arrays( &sys );
 
+
   /* read restart */
   if ( readRestart( &sys, restfile ) ) {
 #ifdef USE_MPI
@@ -74,13 +78,13 @@ int main( /* int argc, char **argv */ )
   /**************************************************/
   /* main MD loop */
   for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
-
+	  
     /* write output, if requested */
     if ( ( sys.rank == 0 ) && ( ( sys.nfi % nprint ) == 0 ) ) output(&sys, erg, traj);
-
+		
     /* propagate system and recompute energies by one half step*/          
     velverlet_first_half(&sys);
-
+		
     /* compute forces and potential energy */
     force(&sys);
 
@@ -89,7 +93,6 @@ int main( /* int argc, char **argv */ )
 
     /* Update kinetic energy */
     ekin(&sys);
-    
   }
   /**************************************************/
 
@@ -98,7 +101,6 @@ int main( /* int argc, char **argv */ )
     printf("Simulation Done.\n");
     fclose(erg);
     fclose(traj);
-    fprintf( stderr, "%f\t%f\t%f\n", sys.overhead, sys.comm_time, sys.force_time );
   }
 
   /* free memory allocated */
@@ -108,5 +110,5 @@ int main( /* int argc, char **argv */ )
   finalize();
 
   return 0;
-
+  
 }
