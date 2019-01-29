@@ -5,27 +5,28 @@ SHELL=/bin/sh
 OBJ_SERIAL=$(SRC:src/%.f90=Obj-serial/%.o)
 PREFIX=$(PWD)
 nproc=1
+OPT = -DTHIRD_LAW
 ############################################
 
 default: serial parallel
 
-serial:
+serial: library-serial
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
-parallel:
+parallel: library-parallel-MPI library-parallel-OMP library-parallel-MPI-OMP
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-parallel
 
-library-serial:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD
+library-serial: 
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD OPT=$(OPT)
 
 library-parallel-MPI:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI OPT=$(OPT)
 
 library-parallel-OMP:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-OMP
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-OMP OPT=$(OPT)
 
 library-parallel-MPI-OMP:
-	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI-OMP
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI-OMP OPT=$(OPT)
 
 clean:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel clean
