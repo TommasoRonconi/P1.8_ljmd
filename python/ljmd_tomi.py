@@ -15,11 +15,11 @@ class _mdsys(Structure):
     """
     The struct class same structure from C.
     """
-    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)),("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int), ("comm_time", c_double), ("force_time", c_double), ("overhead", c_double)]
+    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)),("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int)]
 
 #Create struct
 class _mpi_mdsys(Structure):
-    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)),("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("cx", POINTER(c_double)), ("cy", POINTER(c_double)), ("cz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int), ("comm_time", c_double), ("force_time", c_double), ("overhead", c_double)]
+    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)),("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("cx", POINTER(c_double)), ("cy", POINTER(c_double)), ("cz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int)]
 
 #pass object type
 dso.python_output.argtypes = [POINTER(_mdsys)]
@@ -90,9 +90,9 @@ def handle_output(_output, trajfile, ergfile):
     """
     print(_output.nfi, "\t", _output.temp, "\t", _output.ekin, "\t",  _output.epot, "\t", _output.ekin + _output.epot)
     ergfile.write("{:d} \t{:f} \t{:f}\t{:f}\t {:f}\n".format(_output.nfi,_output.temp, _output.ekin, _output.epot, _output.ekin + _output.epot))
-    trajfile.write("{0}\n nfi={1} etot={2}\n".format(_output.natoms, _output.nfi, _output.ekin + _output.epot))
-    for i in range(_output.natoms+1):
-         trajfile.write("Ar  {:f} \t {:f} \t{:f}\n".format(_output.rx[i], _output.ry[i], _output.rz[i]))
+    #trajfile.write("{0}\n nfi={1} etot={2}\n".format(_output.natoms, _output.nfi, _output.ekin + _output.epot))
+    # for i in range(_output.natoms+1):
+    #      trajfile.write("Ar  {:f} \t {:f} \t{:f}\n".format(_output.rx[i], _output.ry[i], _output.rz[i]))
 
 
 #get elements from file to the list
@@ -100,6 +100,8 @@ conf_dir = "../examples/"
 inp_path = conf_dir + "argon_108.inp"
 
 tmp_sys = _mpi_mdsys()
+mpi_dso.initialize.argtypes = [POINTER(_mpi_mdsys)]
+mpi_dso.initialize.restype = None
 mpi_dso.initialize(byref(tmp_sys))
 
 
@@ -119,24 +121,38 @@ if (tmp_sys.rank == 0) :
 
     #element size
     elem_size = c_double*num_atoms
-    mpi_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rank=tmp_sys.rank, npes=tmp_sys.npes, comm_time=0.0, force_time=0.0, overhead=0.0)
-    
+    mpi_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rank=tmp_sys.rank, npes=tmp_sys.npes)
+
+mpi_dso.broadcast_values.argtypes = [POINTER(_mpi_mdsys)]
+mpi_dso.broadcast_values.restype = None
 mpi_dso.broadcast_values(byref(mpi_sys))
 
-
 #create empty elements
-array_rx = elem_size()
-array_ry = elem_size()
-array_rz = elem_size()
-array_vx = elem_size()
-array_vy = elem_size()
-array_vz = elem_size()
-array_cx = elem_size()
-array_cy = elem_size()
-array_cz = elem_size()
-array_fx = elem_size()
-array_fy = elem_size()
-array_fz = elem_size()
+array_rx = (c_double * mpi_sys.natoms)()
+array_ry = (c_double * mpi_sys.natoms)()
+array_rz = (c_double * mpi_sys.natoms)()
+array_vx = (c_double * mpi_sys.natoms)()
+array_vy = (c_double * mpi_sys.natoms)()
+array_vz = (c_double * mpi_sys.natoms)()
+array_cx = (c_double * mpi_sys.natoms)()
+array_cy = (c_double * mpi_sys.natoms)()
+array_cz = (c_double * mpi_sys.natoms)()
+array_fx = (c_double * mpi_sys.natoms)()
+array_fy = (c_double * mpi_sys.natoms)()
+array_fz = (c_double * mpi_sys.natoms)()
+
+mpi_sys.rx = (c_double * mpi_sys.natoms)()
+mpi_sys.ry = (c_double * mpi_sys.natoms)()
+mpi_sys.rz = (c_double * mpi_sys.natoms)()
+mpi_sys.vx = (c_double * mpi_sys.natoms)()
+mpi_sys.vy = (c_double * mpi_sys.natoms)()
+mpi_sys.vz = (c_double * mpi_sys.natoms)()
+mpi_sys.cx = (c_double * mpi_sys.natoms)()
+mpi_sys.cy = (c_double * mpi_sys.natoms)()
+mpi_sys.cz = (c_double * mpi_sys.natoms)()
+mpi_sys.fx = (c_double * mpi_sys.natoms)()
+mpi_sys.fy = (c_double * mpi_sys.natoms)()
+mpi_sys.fz = (c_double * mpi_sys.natoms)()
 
 if (mpi_sys.rank == 0) :
 
@@ -166,48 +182,29 @@ if (mpi_sys.rank == 0) :
     mpi_sys.cy=array_cy
     mpi_sys.cz=array_cz
 
-
-    
+mpi_dso.broadcast_arrays.argtypes = [POINTER(_mpi_mdsys)]
+mpi_dso.broadcast_arrays.restype = None
 mpi_dso.broadcast_arrays(byref(mpi_sys))
 
+mpi_sys.nfi = 0
+nprint = 100
 
-# mdsys = _mdsys(natoms=108, nfi=100, nsteps=1000, mass=600, epsilon=200, sigma=78, rcut=90.00, box=500,
-#  dt = 8.9, ekin = 0.0, epot = 0.0, temp = 0.0, rx=array_rx,
-# ry = array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz)
-
-
-# mpi_mdsys = _mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5],nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx,ry=array_ry,rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time = 0.0, force_time=0.0, overhead =0.0)
-
-# mpi_mdsys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
-
-# tmp_sys = _mpi_mdsys()
-# tmp_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
+mpi_dso.force.argtypes = [POINTER(_mpi_mdsys)]
+mpi_dso.force.restype = None
+mpi_dso.force(byref(mpi_sys))
+mpi_dso.ekin.argtypes = [POINTER(_mpi_mdsys)]
+mpi_dso.ekin.restype = None
+mpi_dso.ekin(byref(mpi_sys))
 
 # buf = create_string_buffer(b"argon_108.xyz")
 # buf1 = create_string_buffer(b"argon_108.dat")
 
-# mpi_dso.initialize(byref(tmp_sys))
-# if(tmp_sys.rank == 0):
-#     print(tmp_sys.rcut)
-#     mpi_mdsys = _mpi_mdsys(natoms=108, mass=39, epsilon=90.00, sigma=0.0, rcut=0.0, box=0.0, nsteps=1000, dt=0.0, nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx, ry=array_ry,rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
-#     mpi_mdsys.rank = tmp_sys.rank
-#     mpi_mdsys.npes =  tmp_sys.npes
-    
-#     print(mpi_mdsys.cx[10])
-#     print("4")
-#     mpi_dso.broadcast_arrays(mpi_mdsys)
-#    print("herbert")
-
-# mpi_mdsys.nfi = 0
-# nprint = 100
-# mpi_dso.force(byref(mpi_mdsys))
-# mpi_dso.ekin(byref(mpi_mdsys))
-# if(tmp_sys.rank == 0):
-#     f1 = open("argon_108.xyz", 'a+')
-#     f2 = open("argon_108.dat", 'a+')
-#     print("Starting simulation with {0} atoms for {1} steps.\n".format(mpi_mdsys.natoms, mpi_mdsys.nsteps))
-#     print("     NFI            TEMP            EKIN                 EPOT              ETOT\n")
-#     handle_output(mpi_mdsys, f1, f2)
+if (mpi_sys.rank == 0):
+    f1 = open("argon_108.xyz", 'a+')
+    f2 = open("argon_108.dat", 'a+')
+    print("Starting simulation with {0} atoms for {1} steps.\n".format(mpi_sys.natoms, mpi_sys.nsteps))
+    print("     NFI            TEMP            EKIN                 EPOT              ETOT\n")
+    handle_output(mpi_sys, f1, f2)
 
 # mpi_mdsys.nfi = 1
 # for i in range(mpi_mdsys.nfi, mpi_mdsys.nsteps+1):
@@ -223,8 +220,6 @@ mpi_dso.broadcast_arrays(byref(mpi_sys))
 #     f1.close()
 #     f2.close()
 #     print(":f\t:f\t:f\n", mpi_mdsys.overhead,mpi_mdsys.comm_time, mpi_mdsys.force_time)
-
-mpi_dso.finalize();
 
 # mdsys.nfi = 0
 # nprint = 100
@@ -256,3 +251,5 @@ mpi_dso.finalize();
 
 #dso.python_output(byref(mdsys),'argon_108.xyz', 'argon_108.dat')
 #dso.output(mdsys, 'argon_108.xyz', 'argon_108.dat')
+#mpi_dso.free_sys_arrays(byref(mpi_sys))
+mpi_dso.finalize()
