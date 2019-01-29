@@ -32,7 +32,7 @@ struct _mdsys
 typedef struct _mdsys mdsys_t;
 
 /* Inititalization function */
-void initialize ( int argc, char ** argv, mdsys_t * const sys );
+void initialize ( mdsys_t * const sys );
 
 /* Finalization function */
 void finalize ();

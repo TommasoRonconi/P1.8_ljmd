@@ -21,7 +21,7 @@
 #include <velverlet_time_integration.h>
 
 /* main */
-int main( int argc, char **argv ) 
+int main( /* int argc, char **argv */ ) 
 {
 
   //int rank, npes;
@@ -31,7 +31,7 @@ int main( int argc, char **argv )
   mdsys_t sys;
 
   /* Initialize */
-  initialize( argc, argv, &sys );
+  initialize( &sys );
 
 
   /* populate the data_structure with input data */
