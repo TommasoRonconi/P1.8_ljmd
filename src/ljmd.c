@@ -84,7 +84,7 @@ int main( /* int argc, char **argv */ )
 
 	/* clean up: close files, free memory */
 	printf("Simulation Done.\n");
-	printf("Time to execute force's calculations: %f \n", sys.time_omp);
+	fprintf(stderr, "%d\t%f \n", sys.nthreads, sys.time_omp);
 
 	fclose(erg);
 	fclose(traj);
