@@ -98,20 +98,31 @@ def handle_output(_output, trajfile, ergfile):
 #get elements from file to the list
 conf_dir = "../examples/"
 inp_path = conf_dir + "argon_108.inp"
-raw_list = read_inp(inp_path)
-rest_path = conf_dir + raw_list[6]
+
+tmp_sys = _mpi_mdsys()
+mpi_dso.initialize(byref(tmp_sys))
+
+
+if (tmp_sys.rank == 0) :
+
+    raw_list = read_inp(inp_path)
+    rest_path = conf_dir + raw_list[6]
  
-#calculate indexes
-num_atoms = int(raw_list[0])
-r_start, r_end = 0, num_atoms
-v_start, v_end = num_atoms, 2*num_atoms
+    #calculate indexes
+    num_atoms = int(raw_list[0])
+    r_start, r_end = 0, num_atoms
+    v_start, v_end = num_atoms, 2*num_atoms
 
-#return data from file to lists
-rx, ry, rz = read_rest(rest_path, r_start, r_end)
-vx, vy, vz = read_rest(rest_path, v_start, v_end)
+    #return data from file to lists
+    rx, ry, rz = read_rest(rest_path, r_start, r_end)
+    vx, vy, vz = read_rest(rest_path, v_start, v_end)
 
-#element size
-elem_size = c_double*num_atoms
+    #element size
+    elem_size = c_double*num_atoms
+    mpi_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0, rank=tmp_sys.rank, npes=tmp_sys.npes, comm_time=0.0, force_time=0.0, overhead=0.0)
+    
+mpi_dso.broadcast_values(byref(mpi_sys))
+
 
 #create empty elements
 array_rx = elem_size()
@@ -127,19 +138,38 @@ array_fx = elem_size()
 array_fy = elem_size()
 array_fz = elem_size()
 
-#load vectors from th r file
-array_rx = get_array(rx, array_rx)
-array_ry = get_array(ry, array_ry)
-array_rz = get_array(rz, array_rz)
-array_vx = get_array(vx, array_vx)
-array_vy = get_array(vy, array_vy)
-array_vz = get_array(vz, array_vz)
-array_fx = init_force(array_fx)
-array_fy = init_force(array_fy)
-array_fz = init_force(array_fz)
-array_cx = init_force(array_cx)
-array_cy = init_force(array_cy)
-array_cz = init_force(array_cz)
+if (mpi_sys.rank == 0) :
+
+    #load vectors from th r file
+    array_rx = get_array(rx, array_rx)
+    array_ry = get_array(ry, array_ry)
+    array_rz = get_array(rz, array_rz)
+    array_vx = get_array(vx, array_vx)
+    array_vy = get_array(vy, array_vy)
+    array_vz = get_array(vz, array_vz)
+    array_fx = init_force(array_fx)
+    array_fy = init_force(array_fy)
+    array_fz = init_force(array_fz)
+    array_cx = init_force(array_cx)
+    array_cy = init_force(array_cy)
+    array_cz = init_force(array_cz)
+    mpi_sys.rx=array_rx
+    mpi_sys.rx=array_ry
+    mpi_sys.rx=array_rz
+    mpi_sys.vx=array_vx
+    mpi_sys.vy=array_vy
+    mpi_sys.vz=array_vz
+    mpi_sys.fx=array_fx
+    mpi_sys.fy=array_fy
+    mpi_sys.fz=array_fz
+    mpi_sys.cx=array_cx
+    mpi_sys.cy=array_cy
+    mpi_sys.cz=array_cz
+
+
+    
+mpi_dso.broadcast_arrays(byref(mpi_sys))
+
 
 # mdsys = _mdsys(natoms=108, nfi=100, nsteps=1000, mass=600, epsilon=200, sigma=78, rcut=90.00, box=500,
 #  dt = 8.9, ekin = 0.0, epot = 0.0, temp = 0.0, rx=array_rx,
@@ -150,23 +180,23 @@ array_cz = init_force(array_cz)
 
 # mpi_mdsys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
 
-tmp_sys = _mpi_mdsys()
-tmp_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
+# tmp_sys = _mpi_mdsys()
+# tmp_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
 
-buf = create_string_buffer(b"argon_108.xyz")
-buf1 = create_string_buffer(b"argon_108.dat")
+# buf = create_string_buffer(b"argon_108.xyz")
+# buf1 = create_string_buffer(b"argon_108.dat")
 
-mpi_dso.initialize(byref(tmp_sys))
-if(tmp_sys.rank == 0):
-    print(tmp_sys.rcut)
-    mpi_mdsys = _mpi_mdsys(natoms=108, mass=39, epsilon=90.00, sigma=0.0, rcut=0.0, box=0.0, nsteps=1000, dt=0.0, nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx, ry=array_ry,rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
-    mpi_mdsys.rank = tmp_sys.rank
-    mpi_mdsys.npes =  tmp_sys.npes
+# mpi_dso.initialize(byref(tmp_sys))
+# if(tmp_sys.rank == 0):
+#     print(tmp_sys.rcut)
+#     mpi_mdsys = _mpi_mdsys(natoms=108, mass=39, epsilon=90.00, sigma=0.0, rcut=0.0, box=0.0, nsteps=1000, dt=0.0, nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx, ry=array_ry,rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
+#     mpi_mdsys.rank = tmp_sys.rank
+#     mpi_mdsys.npes =  tmp_sys.npes
     
-    print(mpi_mdsys.cx[10])
-    print("4")
-    mpi_dso.broadcast_arrays(mpi_mdsys)
-    print("herbert")
+#     print(mpi_mdsys.cx[10])
+#     print("4")
+#     mpi_dso.broadcast_arrays(mpi_mdsys)
+#    print("herbert")
 
 # mpi_mdsys.nfi = 0
 # nprint = 100
