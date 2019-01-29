@@ -14,9 +14,6 @@ void initialize ( mdsys_t * const sys ) {
   sys->rank = 0;
   sys->npes = 1;  
 #endif //USE_MPI
-  sys->comm_time = 0.0;
-  sys->force_time = 0.0;
-  sys->overhead = 0.0;
   
   return;
   

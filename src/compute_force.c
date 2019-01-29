@@ -1,5 +1,18 @@
 #include <compute_force.h>
+#include <potentials.h>
 
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
+/*Using Third Law of Newton*/
+#ifdef THIRD_LAW
+#define J_BEGIN() i+1	
+#define HALF_FACTOR() 2
+#else
+#define J_BEGIN() 0
+#define HALF_FACTOR() 1
+#endif
 
 // =======================================================================
 
@@ -14,7 +27,9 @@ void ekin(mdsys_t *sys)
     sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
   }
   sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
-  
+
+  return;
+	
 }
 
 
@@ -24,27 +39,26 @@ void ekin(mdsys_t *sys)
 /* static void force(mdsys_t *sys)  */
 void force(mdsys_t *sys) 
 {
-  double r,ffac;
+  double r, rr, rrc, ffac;
   double rx,ry,rz;
   int i, j;
   double epot = 0.0;
   double * fx, *fy, *fz;
-  
+
+  double c12, c6;
+  double r6, rinv;
+
   /* zero energy and forces */
 #ifdef USE_MPI
-  double time1, time2;
 
   fx = sys->cx;
   fy = sys->cy;
   fz = sys->cz;
 
-  time1 = MPI_Wtime();
   /* communicate to all the processes previous step update of positions */
   MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
-  time2 = MPI_Wtime();
-  sys->comm_time += time2 - time1;
   
 #else
   /* sys->epot=0.0; */
@@ -56,50 +70,59 @@ void force(mdsys_t *sys)
   azzero( fy, sys->natoms );
   azzero( fz, sys->natoms );
 
-  /* loop to compute forces */
-  for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
-    for(j=0; j < (sys->natoms); ++j) {
+  c12 = C12(); 
+  c6 = C6();
+  rrc = RRC();
 
-      /* particles have no interactions with themselves */
-      if (i==j) continue;
+  /* loop to compute forces */
+#if defined (_OPENMP)
+#pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
+#endif
+  for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
+    for(j=J_BEGIN(); j < (sys->natoms); ++j) {
             
       /* get distance between particle i and j */
       rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
       ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-      rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-      r = sqrt(rx*rx + ry*ry + rz*rz);
-      
+      rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);     
+      rr = RR();
       /* compute force and energy if within cutoff */
-      if (r < sys->rcut) {
-	ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
-				  +6*pow(sys->sigma/r,6.0)/r);
-	
-	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-				      -pow(sys->sigma/r,6.0));
+	  
+      if (rr < rrc) {
+	r = R();
+	rinv=RINV(); 
+	r6 = R6(); 
+
+	ffac = FFAC();		
+	epot += HALF_FACTOR()*EPOT();
+
+
+#ifdef THIRD_LAW
+	fx[i] += rx/r*ffac; fx[j] -= rx/r*ffac;
+	fy[i] += ry/r*ffac; fy[j] -= ry/r*ffac;
+	fz[i] += rz/r*ffac; fz[j] -= rz/r*ffac;
+#else
 	fx[i] += rx/r*ffac;
 	fy[i] += ry/r*ffac;
 	fz[i] += rz/r*ffac;
+#endif
+
       }
     }
   }  
     
 #ifdef USE_MPI    
-  time1 = MPI_Wtime();
-  sys->force_time += time1 - time2;
   MPI_Reduce( fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   MPI_Reduce( fy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   MPI_Reduce( fz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
-  time2 = MPI_Wtime();
-  sys->comm_time += time2 - time1;
 #else
-  /* sys->fx = fx; */
-  /* sys->fy = fy; */
-  /* sys->fz = fz; */
   sys->epot = epot;
 #endif //USE_MPI
-  
+
+
   return;
+
 }
 
 
