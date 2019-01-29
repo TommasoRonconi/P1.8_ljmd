@@ -13,7 +13,11 @@ struct _mdsys
 {	
 	int nthreads;
     int natoms, nfi, nsteps;
+    
+    #if defined (_OPENMP)
     double time_omp;
+    #endif
+    
     double dt, mass, epsilon, sigma, box, rcut;
     double ekin, epot, temp;
     double *rx, *ry, *rz;
