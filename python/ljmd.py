@@ -151,48 +151,46 @@ array_cz = init_force(array_cz)
 # mpi_mdsys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
 
 tmp_sys = _mpi_mdsys()
-tmp_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
+# tmp_sys = _mpi_mdsys(natoms=int(raw_list[0]), mass=raw_list[1], epsilon=raw_list[2], sigma=raw_list[3], rcut=raw_list[4], box=raw_list[5], nsteps=int(raw_list[9]), dt=raw_list[10], nfi=0, ekin=0.0, epot=0.0, temp=0.0,rx=array_rx, ry=array_ry, rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
 
 buf = create_string_buffer(b"argon_108.xyz")
 buf1 = create_string_buffer(b"argon_108.dat")
 
 mpi_dso.initialize(byref(tmp_sys))
+print(tmp_sys.rank)
+if (tmp_sys.rank == 0):
+    mpi_mdsys = _mpi_mdsys(natoms=108, mass=39, epsilon=90.00, sigma=0.0, rcut=0.0, box=0.0, nsteps=1000, dt=0.0, nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx, ry=array_ry, rz=array_rz,
+                           vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
+    tmp_sys = mpi_mdsys
+    mpi_dso.broadcast_arrays(byref(tmp_sys))
+
+#tmp_sys.nfi = 0
+nprint = 100
+mpi_dso.force(byref(tmp_sys))
+mpi_dso.ekin(byref(tmp_sys))
 if(tmp_sys.rank == 0):
-    print(tmp_sys.rcut)
-    mpi_mdsys = _mpi_mdsys(natoms=108, mass=39, epsilon=90.00, sigma=0.0, rcut=0.0, box=0.0, nsteps=1000, dt=0.0, nfi=0, ekin=0.0, epot=0.0, temp=0.0, rx=array_rx, ry=array_ry,rz=array_rz, vx=array_vx, vy=array_vy, vz=array_vz, cx=array_cx, cy=array_cy, cz=array_cz, fx=array_fx, fy=array_fy, fz=array_fz, rank=0, npes=1, comm_time=0.0, force_time=0.0, overhead=0.0)
-    mpi_mdsys.rank = tmp_sys.rank
-    mpi_mdsys.npes =  tmp_sys.npes
-    
-    print(mpi_mdsys.cx[10])
-    print("4")
-    mpi_dso.broadcast_arrays(mpi_mdsys)
-    print("herbert")
+    f1 = open("argon_108.xyz", 'a+')
+    f2 = open("argon_108.dat", 'a+')
+    print("Starting simulation with {0} atoms for {1} steps.\n".format(
+        tmp_sys.natoms, tmp_sys.nsteps))
+    print("     NFI            TEMP            EKIN                 EPOT              ETOT\n")
+    handle_output(mpi_mdsys, f1, f2)
 
-# mpi_mdsys.nfi = 0
-# nprint = 100
-# mpi_dso.force(byref(mpi_mdsys))
-# mpi_dso.ekin(byref(mpi_mdsys))
-# if(tmp_sys.rank == 0):
-#     f1 = open("argon_108.xyz", 'a+')
-#     f2 = open("argon_108.dat", 'a+')
-#     print("Starting simulation with {0} atoms for {1} steps.\n".format(mpi_mdsys.natoms, mpi_mdsys.nsteps))
-#     print("     NFI            TEMP            EKIN                 EPOT              ETOT\n")
-#     handle_output(mpi_mdsys, f1, f2)
-
-# mpi_mdsys.nfi = 1
-# for i in range(mpi_mdsys.nfi, mpi_mdsys.nsteps+1):
-#     if ((mpi_mdsys.nfi % nprint) == 0):
-#         handle_output(mpi_mdsys, f1, f2)
-#         mpi_dso.velverlet_first_half(byref(mpi_mdsys))
-#         mpi_dso.force(byref(mpi_mdsys))
-#         mpi_dso.velverlet_second_half(byref(mpi_mdsys))
-#         mpi_dso.ekin(byref(mpi_mdsys))
+tmp_sys.nfi = 1
+for i in range(tmp_sys.nfi, tmp_sys.nsteps+1):
+    if ((tmp_sys.nfi % nprint) == 0):
+        handle_output(tmp_sys, f1, f2)
+        mpi_dso.velverlet_first_half(byref(tmp_sys))
+        mpi_dso.force(byref(tmp_sys))
+        mpi_dso.velverlet_second_half(byref(tmp_sys))
+        mpi_dso.ekin(byref(tmp_sys))
     
-# if (tmp_sys.rank == 0):
-#     print("Simulation Done.\n")
-#     f1.close()
-#     f2.close()
-#     print(":f\t:f\t:f\n", mpi_mdsys.overhead,mpi_mdsys.comm_time, mpi_mdsys.force_time)
+if (tmp_sys.rank == 0):
+    print("Simulation Done.\n")
+    f1.close()
+    f2.close()
+    print(":f\t:f\t:f\n", mpi_mdsys.overhead,
+          tmp_sys.comm_time, tmp_sys.force_time)
 
 mpi_dso.finalize();
 
