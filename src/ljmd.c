@@ -34,24 +34,6 @@ int main( /* int argc, char **argv */ )
 	FILE *fp,*traj,*erg;
 	mdsys_t sys;
 
-	// #if defined (_OPENMP)
-	// 	//int tid = omp_get_thread_num();
-	// 	sys.nthreads = omp_get_num_threads();
-	// #else
-	// 	//int tid = 0;
-	// 	sys.nthreads = 1;
-	// #endif
-
-	// #if defined (_OPENMP)
-	// 	int i;
-	// 	int tid;
-	// 	#pragma omp parallel for private(i, tid)
-	// 	for(i=0; i<4; i++){
-	// 		tid = omp_get_num_threads();
-	// 		printf("Hello from thread N %d out of %d threads", omp_get_thread_num(), omp_get_num_threads());
-	// 	}
-	// #endif
-
 	if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) return 1;
 
 	/* allocate memory on the heap for retaining position/velocity/force infos on the sys struct */
@@ -87,7 +69,16 @@ int main( /* int argc, char **argv */ )
 		velverlet_first_half(&sys);
 
 		/* compute forces and potential energy */
+		#if defined (_OPENMP)
+		float t_start = omp_get_wtime();
+		#endif
 		force(&sys);
+
+		#if defined (_OPENMP)
+		float t_end = omp_get_wtime();
+		float t_tot = t_end - t_start;
+		sys.time_omp = t_tot;
+		#endif
 
 		/* propagate system and recompute energies by another half step*/  
 		velverlet_second_half(&sys); 
@@ -99,10 +90,7 @@ int main( /* int argc, char **argv */ )
 
 	/* clean up: close files, free memory */
 	printf("Simulation Done.\n");
-
-	#if defined (_OPENMP)
-	fprintf(stderr, "%d\n", sys.nthreads);
-	#endif
+	printf("Time to execute force's calculations: %f \n", sys.time_omp);
 
 	fclose(erg);
 	fclose(traj);

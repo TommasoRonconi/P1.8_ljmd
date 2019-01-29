@@ -33,12 +33,18 @@ void force(mdsys_t *sys)
 	double r,ffac;
 	double rx,ry,rz;
 	double epot = 0.0;
-	
-	#if defined (_OPENMP)
-	float t_start = 0.0;
-	float t_end = 0.0;
-	float t_tot = 0.0;
-	#endif
+
+	// #if defined (_OPENMP)
+	// float t_start = 0.0;
+	// float t_end = 0.0;
+	// float t_tot = 0.0;
+	// #endif
+
+	// #if defined (_OPENMP)
+	// int tid = omp_get_thread_num();
+	// #else
+	// int tid = 0;
+	// #endif
 
 	int i,j;
 
@@ -46,17 +52,21 @@ void force(mdsys_t *sys)
 	#pragma omp parallel
 	#endif
 
-
-
 	/* zero energy and forces */
 	sys->epot=0.0;
 	azzero(sys->fx,sys->natoms);
 	azzero(sys->fy,sys->natoms);
 	azzero(sys->fz,sys->natoms);
 
+	#if defined (_OPENMP)
+	sys->nthreads = omp_get_num_threads();
+	#else
+	sys->nthreads = 1;
+	#endif
+
 
 	#if defined (_OPENMP)
-	#pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) //reduction(+:epot, t_tot)
+	#pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
 	#endif
 	for(i=0; i < (sys->natoms); ++i) {
 		for(j=0; j < (sys->natoms); ++j) {
@@ -86,18 +96,22 @@ void force(mdsys_t *sys)
 				// t_end = omp_get_wtime();
 				// #endif
 
+				// #if defined (_OPENMP)
+				// t_tot += t_end - t_start;
+				// printf("%f\n", t_tot);
+				// #endif
+
 				sys->fx[i] += rx/r*ffac;
 				sys->fy[i] += ry/r*ffac;
 				sys->fz[i] += rz/r*ffac;
-
-				// #if defined (_OPENMP)
-				// t_tot += t_end - t_start;
-				// #endif
 			}
 		}
 	}
 
-	// sys->time_omp = t_tot / nthreads;
+	// #if defined (_OPENMP)
+	// sys->time_omp = t_tot / sys->nthreads;
+	// #endif
+
 	sys->epot = epot;
 
 	return;
