@@ -1,12 +1,13 @@
 """
 @authors: Herbert Nguuruwe
-working on the python interface
+@Team: Matteo, Thomaso, Jesus 
 
 """
 from ctypes import *
 import argparse
 
-#impotrt DSo
+#dynamic libraries
+mpi_dso = ("../Obj-parllel/libLJMD.so")
 dso = CDLL("../Obj-serial/libLJMD.so")
 
 #command line arguments
@@ -16,8 +17,10 @@ parser.parse_args()
 #Create struct
 class _mdsys(Structure):
     """
+    The struct class same structure from C.
     """
-    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double),("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)), ("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double))]
+    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(c_double)),
+                ("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("cx", POINTER(c_double)), ("cy", POINTER(c_double)), ("cz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int)]
     
 #pass object type
 dso.python_output.argtypes = [POINTER(_mdsys)]
@@ -27,6 +30,7 @@ dso.python_output.restype = _mdsys
 def read_inp(filename):
     """
     @param filename: file name to read from the inp file
+    Read the file for input file 
     """
     list = []
     with open(filename, 'r') as f:
@@ -139,6 +143,9 @@ array_vz = get_array(vz, array_vz)
 array_fx = init_force(array_fx)
 array_fy = init_force(array_fy)
 array_fz = init_force(array_fz)
+array_cx = init_force(array_cx)
+array_cy = init_force(array_cy)
+array_cz = init_force(array_cz)
 
 # mdsys = _mdsys(natoms=108, nfi=100, nsteps=1000, mass=600, epsilon=200, sigma=78, rcut=90.00, box=500,
 #  dt = 8.9, ekin = 0.0, epot = 0.0, temp = 0.0, rx=array_rx,
@@ -194,7 +201,7 @@ mdsys.nfi = 1
 for i in range(mdsys.nfi, mdsys.nsteps+1):
     #
     if ((mdsys.nfi % nprint) == 0):
-    #print("inside \n", mdsys.nfi+1)
+    #print("inside \n", mdsys.nfi+1) 
         handle_output(dso.python_output(byref(mdsys)), f1, f2)
         dso.velverlet_first_half(byref(mdsys))
         dso.force(byref(mdsys))
