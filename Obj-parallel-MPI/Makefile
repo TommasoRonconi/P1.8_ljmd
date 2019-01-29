@@ -1,17 +1,17 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
 
-CC=gcc
+MPIC = mpicc
 
 ES = so
 
 dirR = $(PWD)/..
 dirI = $(dirR)/include
 dirL = $(dirR)/src
-dirS = $(dirR)/Obj-serial
+dirS = $(dirR)/Obj-parallel-MPI
 dirEXE = $(dirR)
 
-exe_name = $(dirEXE)/ljmd-serial.x
+exe_name = $(dirEXE)/ljmd-parallel-mpi.x
 
 CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
 
@@ -25,7 +25,7 @@ OBJ_INTERFACE = $(dirS)/ljmd.o
 OBJ = $(dirS)/velverlet_time_integration.o $(dirS)/output.o $(dirS)/input.o $(dirS)/compute_force.o $(dirS)/data_structure.o $(dirS)/utilities_ljmd.o
 
 # Shared library:
-LIB = $(dirS)/libLJMD.$(ES)
+LIB = $(dirS)/libLJMD-mpi.$(ES)
 
 default: $(exe_name)
 
@@ -33,18 +33,18 @@ clean_garbage:
 	rm -f *.mod *.o $(dirL)/*~ $(dirI)/*~ $(dirS)/*~
 
 clean: clean_garbage
-	rm -f $(dirR)/ljmd-serial.x $(OBJ) $(OBJ_INTERFACE) $(LIB)
+	rm -f $(dirR)/ljmd-parallel-mpi.x $(OBJ) $(OBJ_INTERFACE) $(LIB)
 
 # linker rule
 $(exe_name): $(OBJ_INTERFACE) libLJMD 
-	$(CC) -o $@ $(OBJ_INTERFACE) $(LD_FLAGS) -L$(dirS) -lLJMD 
+	$(MPIC) -o $@ $(OBJ_INTERFACE) $(LD_FLAGS) -L$(dirS) -lLJMD-mpi
 
 # general rule
 $(dirS)/%.o: $(dirL)/%.c
-	$(CC) $(C_FLAGS) -c -fPIC $< -o $@
+	$(MPIC) $(C_FLAGS) -c -fPIC $< -o $@ -DUSE_MPI
 
 libLJMD: $(OBJ)
-	$(CC) $(C_FLAGS0) -shared -o $(LIB) $^
+	$(MPIC) $(C_FLAGS0) -shared -o $(LIB) $^
 
 # pre-requisites
 # .o

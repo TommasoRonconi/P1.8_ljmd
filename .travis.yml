@@ -9,6 +9,7 @@ compiler:
 
 script:
   - make check
+  - make check-MPI
   - make mytest
 
 notifications:

@@ -3,23 +3,35 @@ SHELL=/bin/sh
 ############################################
 # derived makefile variables
 OBJ_SERIAL=$(SRC:src/%.f90=Obj-serial/%.o)
+PREFIX=$(PWD)
 ############################################
 
 default: serial
 
 serial:
-	$(MAKE) $(MFLAGS) -C Obj-$@
+	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
-library:
-	$(MAKE) $(MFLAGS) -C Obj-serial libLJMD
+parallel-MPI:
+	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
+
+library-serial:
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD
+
+library-parallel-MPI:
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel-MPI libLJMD
 
 clean:
-	$(MAKE) $(MFLAGS) -C Obj-serial clean
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel-MPI clean
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean
-	$(MAKE) $(MFLAGS) -C tests clean
+	$(MAKE) $(MFLAGS) -C test-mpi clean
+	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests clean
 
 check: serial
 	$(MAKE) $(MFLAGS) -C examples check
 
-mytest: library
+check-MPI: parallel-MPI
+	$(MAKE) $(MFLAGS) -C test-mpi check
+
+mytest: library-serial
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests run
