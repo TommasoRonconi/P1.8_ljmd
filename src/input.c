@@ -106,6 +106,14 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
     
   } //endif ( sys->rank == 0 )
 
+  broadcast_values( sys );
+  
+  return 0;
+  
+}
+
+void broadcast_values ( mdsys_t * sys ) {
+
 #ifdef USE_MPI
   /* Broadcasting from rank 0 to all what has been read */
   MPI_Bcast( &( sys->natoms ), 1, MPI_INT, 0, sys->comm );
@@ -118,7 +126,7 @@ int populate_data(FILE * fp, char (*line)[BLEN], char (*restfile)[BLEN],
   MPI_Bcast( &( sys->dt ), 1, MPI_DOUBLE, 0, sys->comm );
 #endif //USE_MPI
 
-  return 0;
+  return;
   
 }
 
@@ -157,6 +165,14 @@ int readRestart( mdsys_t * sys, char restfile[BLEN] )
       }
   } //endif ( sys->rank == 0 )
 
+  broadcast_arrays( sys );
+  
+  return 0;
+  
+}
+
+void broadcast_arrays ( mdsys_t * sys ) {
+
 #ifdef USE_MPI
   /* Broadcasting from rank 0 to all what has been read */
   MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
@@ -166,7 +182,7 @@ int readRestart( mdsys_t * sys, char restfile[BLEN] )
   MPI_Bcast( sys->vy, sys->natoms, MPI_DOUBLE, 0, sys->comm );
   MPI_Bcast( sys->vz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
 #endif //USE_MPI
-  
-  return 0;
+
+  return;
   
 }
