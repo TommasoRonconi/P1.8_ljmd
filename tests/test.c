@@ -27,7 +27,7 @@ int tests_run = 0;
 test_sys gsys;
 
 /* main */
-int main( int argc, char **argv ) 
+int main( /* int argc, char **argv */ ) 
 {
 
   int nprint;
@@ -36,7 +36,7 @@ int main( int argc, char **argv )
   mdsys_t sys;
 
   /* Initialize */
-  initialize( argc, argv, &sys );
+  initialize( &sys );
 
   /* populate the data_structure with input data */
   if ( populate_data( stdin, &line, &restfile, &trajfile, &ergfile, &sys, &nprint ) ) {
