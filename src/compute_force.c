@@ -40,9 +40,9 @@ void force(mdsys_t *sys)
 
   time1 = MPI_Wtime();
   /* communicate to all the processes previous step update of positions */
-  MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, sys->comm );
-  MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, sys->comm );
-  MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, sys->comm );
+  MPI_Bcast( sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
+  MPI_Bcast( sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
+  MPI_Bcast( sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD );
   time2 = MPI_Wtime();
   sys->comm_time += time2 - time1;
   
@@ -86,10 +86,10 @@ void force(mdsys_t *sys)
 #ifdef USE_MPI    
   time1 = MPI_Wtime();
   sys->force_time += time1 - time2;
-  MPI_Reduce( fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-  MPI_Reduce( fy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-  MPI_Reduce( fz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
-  MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, sys->comm );
+  MPI_Reduce( fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
+  MPI_Reduce( fy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
+  MPI_Reduce( fz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
+  MPI_Reduce( &epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
   time2 = MPI_Wtime();
   sys->comm_time += time2 - time1;
 #else
