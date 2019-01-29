@@ -4,6 +4,7 @@ SHELL=/bin/sh
 # derived makefile variables
 OBJ_SERIAL=$(SRC:src/%.f90=Obj-serial/%.o)
 PREFIX=$(PWD)
+nproc=1
 ############################################
 
 default: serial
@@ -31,7 +32,7 @@ check: serial
 	$(MAKE) $(MFLAGS) -C examples check
 
 check-MPI: parallel-MPI
-	$(MAKE) $(MFLAGS) -C test-mpi check
+	$(MAKE) $(MFLAGS) -C test-mpi check nproc=$(nproc)
 
 mytest: library-serial
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests run
