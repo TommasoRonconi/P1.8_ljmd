@@ -9,13 +9,13 @@ nproc=1
 
 default: serial
 
-serial:
+serial: library-serial
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
-parallel-MPI:
+parallel-MPI: library-parallel-MPI
 	$(MAKE) dirR=$(PWD) dirEXE=$(PREFIX) $(MFLAGS) -C Obj-$@
 
-library-serial:
+library-serial: 
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-serial libLJMD
 
 library-parallel-MPI:
