@@ -1,9 +1,11 @@
 #include <data_structure.h>
 
-void initialize ( int argc, char ** argv,  mdsys_t * const sys ) {
+void initialize ( mdsys_t * const sys ) {
 
-#ifdef USE_MPI  
-  MPI_Init( &argc, &argv );
+#ifdef USE_MPI
+  int * argc_dummy;
+  char *** argv_dummy;
+  MPI_Init( argc_dummy, argv_dummy );
   MPI_Comm_size( MPI_COMM_WORLD, &sys->npes );
   MPI_Comm_rank( MPI_COMM_WORLD, &sys->rank );
   /* sys.rank = rank; */
