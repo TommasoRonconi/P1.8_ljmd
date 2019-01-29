@@ -1,9 +1,18 @@
 #include <compute_force.h>
+#include <potentials.h>
 
 #if defined (_OPENMP)
 #include <omp.h>
 #endif
 
+/*Using Third Law of Newton*/
+#ifdef THIRD_LAW
+#define J_BEGIN() i+1	
+#define HALF_FACTOR() 2
+#else
+#define J_BEGIN() 0
+#define HALF_FACTOR() 1
+#endif
 
 // =======================================================================
 
@@ -11,13 +20,15 @@
 /* static void ekin(mdsys_t *sys) */
 void ekin(mdsys_t *sys)
 {   
-	int i;
+  int i;
 
-	sys->ekin=0.0;
-	for (i=0; i<sys->natoms; ++i) {
-		sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
-	}
-	sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
+  sys->ekin=0.0;
+  for (i=0; i<sys->natoms; ++i) {
+    sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
+  }
+  sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
+
+  return;
 	
 }
 
@@ -28,11 +39,13 @@ void ekin(mdsys_t *sys)
 /* static void force(mdsys_t *sys)  */
 void force(mdsys_t *sys) 
 {
-  double r,ffac;
+  double r, rr, rrc, ffac;
   double rx,ry,rz;
   int i, j;
   double epot = 0.0;
   double * fx, *fy, *fz;
+  double c12, c6;
+  double r6, rinv;
 
   /* zero energy and forces */
 #ifdef USE_MPI
@@ -56,39 +69,43 @@ void force(mdsys_t *sys)
   azzero( fy, sys->natoms );
   azzero( fz, sys->natoms );
 
-  /* #if defined (_OPENMP) */
-  /* #pragma omp parallel */
-  /* sys->nthreads = omp_get_num_threads(); */
-  /* #else */
-  /* sys->nthreads = 1; */
-  /* #endif */
+  c12 = C12(); 
+  c6 = C6();
+  rrc = RRC();
 
   /* loop to compute forces */
 #if defined (_OPENMP)
 #pragma omp parallel for private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
 #endif
   for( i = sys->rank; i < (sys->natoms); i += sys->npes ) {
-    for(j=0; j < (sys->natoms); ++j) {
-
-      /* particles have no interactions with themselves */
-      if (i==j) continue;
+    for(j=J_BEGIN(); j < (sys->natoms); ++j) {
             
       /* get distance between particle i and j */
       rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
       ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-      rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-      r = sqrt(rx*rx + ry*ry + rz*rz);
-      
+      rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);     
+      rr = RR();
       /* compute force and energy if within cutoff */
-      if (r < sys->rcut) {
-	ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
-				  +6*pow(sys->sigma/r,6.0)/r);
-	
-	epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-				      -pow(sys->sigma/r,6.0));
+	  
+      if (rr < rrc) {
+	r = R();
+	rinv=RINV(); 
+	r6 = R6(); 
+
+	ffac = FFAC();		
+	epot += HALF_FACTOR()*EPOT();
+
+
+#ifdef THIRD_LAW
+	fx[i] += rx/r*ffac; fx[j] -= rx/r*ffac;
+	fy[i] += ry/r*ffac; fy[j] -= ry/r*ffac;
+	fz[i] += rz/r*ffac; fz[j] -= rz/r*ffac;
+#else
 	fx[i] += rx/r*ffac;
 	fy[i] += ry/r*ffac;
 	fz[i] += rz/r*ffac;
+#endif
+
       }
     }
   }  
@@ -101,7 +118,8 @@ void force(mdsys_t *sys)
 #else
   sys->epot = epot;
 #endif //USE_MPI
-  
+
+
   return;
 
 }

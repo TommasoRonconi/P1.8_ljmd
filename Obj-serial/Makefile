@@ -1,6 +1,15 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
 
+#####################################################################
+# Options:
+
+# OPT += -DMORSE
+
+OPT += -DTHIRD_LAW
+
+#####################################################################
+
 CC=gcc
 
 ES = so
@@ -13,9 +22,9 @@ dirEXE = $(dirR)
 
 exe_name = $(dirEXE)/ljmd-serial.x
 
-CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer
+CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -fomit-frame-pointer -ffast-math
 
-C_FLAGS = $(CFLAGS0) -I$(dirI)
+C_FLAGS = $(CFLAGS0) -I$(dirI) $(OPT)
 
 LD_FLAGS = -lm -Wl,-rpath,$(dirS)
 
@@ -53,7 +62,7 @@ $(dirS)/ljmd.o: $(dirL)/ljmd.c $(dirI)/compute_force.h $(dirI)/data_structure.h 
 
 $(dirS)/velverlet_time_integration.o: $(dirI)/velverlet_time_integration.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
 
-$(dirS)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h
+$(dirS)/compute_force.o: $(dirI)/compute_force.h $(dirI)/data_structure.h $(dirI)/utilities_ljmd.h $(dirI)/potentials.h
 
 $(dirS)/utilities_ljmd.o: $(dirI)/utilities_ljmd.h
 
