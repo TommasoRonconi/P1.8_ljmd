@@ -24,7 +24,7 @@ We compute the **strong scaling** by averaging over 10 runs number of threads, n
 
 
 
-We notice how, for a problem of small size (i.e. number of atoms = 108), there is a slight speedup up to 6 threads; afterwards, there is a noticeable decrease in the performance.
+We notice how, for a problem of small size (i.e. number of atoms = 108), the speedup is linear up to 6 threads; afterwards, there is a noticeable decrease in the performance.
 
 On the contrary, for a problem of a bigger size (i.e. number of atoms = 2916), the speedup linearly increases up to 18 threads, with a slight plateau on 19 threads.
 
