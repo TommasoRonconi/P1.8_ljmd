@@ -5,7 +5,7 @@
 #include <data_structure.h>
 
 /*Avoiding expensive math*/ 
-#ifdef AVOID_MATH
+#ifdef LJ_LESS_MATH
 
 #define FFAC() (12.0*c12*r6 - 6.0*c6)*r6*rinv
 #define EPOT() 0.5*r6*(c12*r6 - c6)
@@ -23,6 +23,8 @@
 
 #define FFAC() sys->epsilon*(1-exp(-1*sys->sigma*rr))*(1-exp(-1*sys->sigma*rr))
 #define EPOT() -0.5*sys->epsilon*(1-exp(-1*sys->sigma*rr))*(sys->sigma*exp(-1*sys->sigma*rr))
+// #define FFAC() 0
+// #define EPOT() 0
 #define  C12() 0
 #define  C6() 0
 #define  RRC() sys->rcut
@@ -49,6 +51,3 @@
 
 
 #endif //__COMPUTE_FORCE__
-
-// #define FFAC() sys->epsilon*(1-exp(-1*sys->sigma*rr))*(1-exp(-1*sys->sigma*rr))
-// #define EPOT() -0.5*sys->epsilon*(1-exp(-1*sys->sigma*rr))*(sys->sigma*exp(-1*sys->sigma*rr))
