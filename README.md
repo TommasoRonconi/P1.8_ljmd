@@ -1,6 +1,12 @@
 # P1.8_ljmd
 # Jesus Espinoza, Herbert Nguruwe, Tommaso Ronconi, Matteo Zampieri
 
+- Jesus Espinoza (GitHub:JesusEV): **optimization**
+- Herbert Nguruwe (GitHub:hibozzy18): **python interface**
+- Tommaso Ronconi (GitHub:TommasoRonconi): **MPI parallelization**
+- Matteo Zampieri (GitHub:zampierimatteo91): **OpenMP parallelization**
+
+
 ## MPI benchmarking
 
 We test the performance of our MPI parallelization by collecting the time spent by the `force()` function (declared in [compute_force.h](include/compute_force.h) and defined in [compute_force.c](src/compute_force.c)) both with and without the communication part.
