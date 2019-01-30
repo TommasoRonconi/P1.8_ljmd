@@ -9,6 +9,10 @@
 #include <utilities_ljmd.h>
 #include <data_structure.h>
 
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
 /* compute kinetic energy */
 // static void ekin ( mdsys_t * sys );
 void ekin ( mdsys_t * sys );

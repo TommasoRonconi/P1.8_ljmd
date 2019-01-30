@@ -6,6 +6,10 @@
 #include <mpi.h>
 #endif //USE_MPI
 
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
 /* structure to hold the complete information 
  * about the MD system */
 struct _mdsys
@@ -22,11 +26,9 @@ struct _mdsys
 
   /* variables to manage MPI parallelization */
   int rank, npes;
-  double comm_time, force_time, overhead;
-#ifdef USE_MPI
-  MPI_Comm comm;
-#endif //USE_MPI
-  
+
+  /* variables to manage OpenMP parallelization */
+  int nthreads;
 };
 
 typedef struct _mdsys mdsys_t;

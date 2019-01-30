@@ -8,16 +8,10 @@ void initialize ( mdsys_t * const sys ) {
   MPI_Init( argc_dummy, argv_dummy );
   MPI_Comm_size( MPI_COMM_WORLD, &sys->npes );
   MPI_Comm_rank( MPI_COMM_WORLD, &sys->rank );
-  /* sys.rank = rank; */
-  /* sys.npes = npes; */
-  sys->comm = MPI_COMM_WORLD;
 #else
   sys->rank = 0;
   sys->npes = 1;  
 #endif //USE_MPI
-  sys->comm_time = 0.0;
-  sys->force_time = 0.0;
-  sys->overhead = 0.0;
   
   return;
   
