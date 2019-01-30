@@ -71,7 +71,7 @@ def get_array(list2, array):
         array[i] = list2[i]
     return array
 
-def init_force(array):
+def init_array(array):
     """
     initialize all force vallues values to zero
     @param array: f{x|y|z}array values
@@ -136,12 +136,12 @@ array_rz = get_array(rz, array_rz)
 array_vx = get_array(vx, array_vx)
 array_vy = get_array(vy, array_vy)
 array_vz = get_array(vz, array_vz)
-array_fx = init_force(array_fx)
-array_fy = init_force(array_fy)
-array_fz = init_force(array_fz)
-array_cx = init_force(array_cx)
-array_cy = init_force(array_cy)
-array_cz = init_force(array_cz)
+array_fx = init_array(array_fx)
+array_fy = init_array(array_fy)
+array_fz = init_array(array_fz)
+array_cx = init_array(array_cx)
+array_cy = init_array(array_cy)
+array_cz = init_array(array_cz)
 
 # mdsys = _mdsys(natoms=108, nfi=100, nsteps=1000, mass=600, epsilon=200, sigma=78, rcut=90.00, box=500,
 #  dt = 8.9, ekin = 0.0, epot = 0.0, temp = 0.0, rx=array_rx,

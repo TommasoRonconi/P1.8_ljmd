@@ -1,11 +1,10 @@
 """
-@authors: Herbert Nguuruwe
-@Team: Matteo, Thomaso, Jesus 
-
+@Authors:Jesus Espinoza, Herbert Nguruwe, Tommaso Ronconi, Matteo Zampieri
 """
 from ctypes import *
 import argparse
 import sys 
+
 
 #dynamic libraries
 mpi_dso = CDLL("../Obj-parallel/libLJMD-mpi.so")
@@ -13,21 +12,8 @@ dso = CDLL("../Obj-serial/libLJMD.so")
 omp_dso = CDLL("../Obj-parallel/libLJMD-omp.so")
 momp = CDLL("../Obj-parallel/libLJMD-mpi-omp.so")
 
-#Create struct
-class _mdsys(Structure):
-    """
-    The struct class same structure from C.
-    """
-    _fields_ = [("natoms", c_int), ("nfi", c_int), ("nsteps", c_int), ("dt", c_double), ("mass", c_double),  ("epsilon", c_double),  ("sigma", c_double), ("box", c_double), ("rcut", c_double), ("ekin", c_double), ("epot", c_double), ("temp", c_double), ("rx", POINTER(c_double)), ("ry", POINTER(
-        c_double)), ("rz", POINTER(c_double)), ("vx", POINTER(c_double)), ("vy", POINTER(c_double)), ("vz", POINTER(c_double)), ("fx", POINTER(c_double)), ("fy", POINTER(c_double)), ("fz", POINTER(c_double)), ("rank", c_int), ("npes", c_int), ("comm_time", c_double), ("force_time", c_double), ("overhead", c_double)]
-
-#pass object type
-dso.python_output.argtypes = [POINTER(_mdsys)]
-dso.python_output.restype = _mdsys
-
-
-#accept input files
-inputfile = sys.argv[1]
+inputfile = "argon_108.inp"
+#inputfile = sys.argv[1]
 
 #Read from input file
 def read_inp(filename):
@@ -76,7 +62,7 @@ def get_array(list2, array):
     return array
 
 
-def init_force(array):
+def init_array(array):
     """
     initialize all force vallues values to zero
     @param array: f{x|y|z}array values
@@ -105,12 +91,14 @@ def handle_output(_output, trajfile, ergfile):
              _output.rx[i], _output.ry[i], _output.rz[i]))
 
 
+
 #get elements from file to the list
 conf_dir = "../examples/"
 inp_path = conf_dir + inputfile
 raw_list = read_inp(inp_path)
 rest_path = conf_dir + raw_list[6]
 
+print(raw_list)
 #calculate indexes
 num_atoms = int(raw_list[0])
 r_start, r_end = 0, num_atoms
@@ -144,11 +132,11 @@ array_rz = get_array(rz, array_rz)
 array_vx = get_array(vx, array_vx)
 array_vy = get_array(vy, array_vy)
 array_vz = get_array(vz, array_vz)
-array_fx = init_force(array_fx)
-array_fy = init_force(array_fy)
-array_fz = init_force(array_fz)
-array_cx = init_force(array_cx)
-array_cy = init_force(array_cy)
-array_cz = init_force(array_cz)
+array_fx = init_array(array_fx)
+array_fy = init_array(array_fy)
+array_fz = init_array(array_fz)
+array_cx = init_array(array_cx)
+array_cy = init_array(array_cy)
+array_cz = init_array(array_cz)
 
 
