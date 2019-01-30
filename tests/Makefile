@@ -10,7 +10,7 @@ dirS = $(dirR)/Obj-serial
 dirT = $(dirR)/tests
 
 CFLAGS = -Wall -Wextra -g -O3 -ffast-math -fomit-frame-pointer -I$(dirI) -I$(dirT)
-LDLIBS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS) -L$(dirS) -lLJMD
+LDLIBS = -lm -Wl,-rpath,$(dirL) -Wl,-rpath,$(dirS) -L$(dirS) -lLJMD-LJ 
 
 
 # VPATH=$(dirL)
