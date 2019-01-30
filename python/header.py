@@ -12,8 +12,8 @@ dso = CDLL("../Obj-serial/libLJMD.so")
 omp_dso = CDLL("../Obj-parallel/libLJMD-omp.so")
 momp = CDLL("../Obj-parallel/libLJMD-mpi-omp.so")
 
-inputfile = "argon_108.inp"
-#inputfile = sys.argv[1]
+#inputfile = "argon_108.inp"
+inputfile = sys.argv[1]
 
 #Read from input file
 def read_inp(filename):

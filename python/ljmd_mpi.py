@@ -104,7 +104,7 @@ mpi_dso.broadcast_arrays.restype = None
 mpi_dso.broadcast_arrays(byref(mpi_sys))
 
 mpi_sys.nfi = 0
-nprint = 100
+nprint = int(raw_list[11])
 
 mpi_dso.force.argtypes = [POINTER(_mpi_mdsys)]
 mpi_dso.force.restype = None

@@ -107,7 +107,7 @@ mpi_dso.broadcast_arrays.restype = None
 mpi_dso.broadcast_arrays(byref(mpi_sys))
 
 mpi_sys.nfi = 0
-nprint = 100
+nprint = int(raw_list[11])
 
 mpi_dso.force.argtypes = [POINTER(_mpi_mdsys)]
 mpi_dso.force.restype = None
@@ -137,8 +137,8 @@ for i in range(mpi_sys.nfi, mpi_sys.nsteps+1):
             handle_output(mpi_sys, f1, f2)
     mpi_dso.velverlet_first_half(byref(mpi_sys))
     mpi_dso.force(byref(mpi_sys))
-    # mpi_dso.velverlet_second_half(byref(mpi_sys))
-    # mpi_dso.ekin(byref(mpi_sys))
+    mpi_dso.velverlet_second_half(byref(mpi_sys))
+    mpi_dso.ekin(byref(mpi_sys))
     mpi_sys.nfi += 1
 
 if (mpi_sys.rank == 0):
