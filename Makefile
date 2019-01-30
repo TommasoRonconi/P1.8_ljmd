@@ -31,7 +31,7 @@ library-parallel-OMP:
 library-parallel-MPI-OMP:
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C Obj-parallel libLJMD-MPI-OMP-LJ libLJMD-MPI-OMP-MS OPT=$(OPT)
 
-check: serial
+check-LJ: serial
 	$(MAKE) $(MFLAGS) -C examples check
 
 check-MPI-LJ: parallel
@@ -43,7 +43,7 @@ check-MS: serial
 check-MPI-MS: parallel
 	$(MAKE) $(MFLAGS) -C test-mpi check-morse nproc=$(nproc)
 
-mytest: library-serial
+mytest: serial
 	$(MAKE) dirR=$(PWD) $(MFLAGS) -C tests run
 
 clean:
