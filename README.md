@@ -29,3 +29,16 @@ We notice how, for a problem of small size (i.e. number of atoms = 108), the spe
 On the contrary, for a problem of a bigger size (i.e. number of atoms = 2916), the speedup linearly increases up to 18 threads, with a slight plateau on 19 threads.
 
 The plot suggests that the difference in performance, given the two problem sizes, might be due to the communication time relative to the size itself: for a small problem size, the communications becomes relatively more expensive.
+
+
+
+## Performance Comparison of the different optimizations
+
+Time measurements for the performance of the different optimizations were performed, both for the Leonard-Johnson potential and for the Morse potential, with a quantity of 2916 particles, and 1000 time steps. These times were measured in the Ulysses cluster, using 20 MPI processes for the MPI case alone, and 4 MPI processes and 16 threads for the MPI + OMP case.
+As can be seen, the best performance was obtained using only coarse parallelization and not with coarse + fine parallelization.
+
+![](time_measurements/DATA/time_profiling_LJ.png)
+
+
+
+![](time_measurements/DATA/time_profiling_MS.png)
