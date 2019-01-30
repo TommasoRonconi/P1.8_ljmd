@@ -19,12 +19,6 @@ group.add_argument("-o", "--omp", action="store_true", help="run with omp only",
 group.add_argument("-mo", "--momp", action="store_true", help="run with omp + mpi", dest="momp")
 args=parser.parse_args()
 
-if not (args.npes):
-    args.npes = 2
-
-if not (args.nthre):
-    args.nythre = 2
-
 if(args.serial):
     print("Use  serial")
     subprocess.run(["python", "ljmd.py", args.input_file])

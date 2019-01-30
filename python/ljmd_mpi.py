@@ -133,8 +133,8 @@ for i in range(1, mpi_sys.nsteps+1):
             handle_output(mpi_sys, f1, f2)
     mpi_dso.velverlet_first_half(byref(mpi_sys))
     mpi_dso.force(byref(mpi_sys))
-    # mpi_dso.velverlet_second_half(byref(mpi_sys))
-    # mpi_dso.ekin(byref(mpi_sys))
+    mpi_dso.velverlet_second_half(byref(mpi_sys))
+    mpi_dso.ekin(byref(mpi_sys))
     mpi_sys.nfi += 1
 
 if (mpi_sys.rank == 0):

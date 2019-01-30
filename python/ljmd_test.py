@@ -77,29 +77,6 @@ class Test(unittest.TestCase):
         self.assertEqual(mdsys.nsteps, 10000, "steps is different from source")
         self.assertEqual(mdsys.dt, 5.0, "dt is different from source")
 
-        #check the 1st number
-        self.assertEqual(mdsys.rx[0], 6.67103294321331,"The 1st value of arra_rx[0] is not the same with source")
-        self.assertEqual(mdsys.ry[0], -10.6146871435653,"The 1st value of arra_ry[0] is not the same with source")
-        self.assertEqual(mdsys.rz[0], 12.6336939877734,"The 1st value of arra_rz[0] is not the same with source")
-        self.assertEqual(mdsys.rx[108], -6.65121935702062,"The last value of arra_rx[0] is not the same with source")
-        self.assertEqual(mdsys.ry[108], 1.49356278110318,"The last value of arra_ry[0] is not the same with source")
-        self.assertEqual(mdsys.rz[108], 20.6354475761263,"The last value of arra_rz[0] is not the same with source")
-
-
-        #check velocity values
-        self.assertEqual(mdsys.vx[0], -1.5643224621482283e-03,"The 1st value of arra_vx[0] is not the same with source")
-        self.assertEqual(mdsys.vy[0], 4.8497508563925346e-04,"The 1st value of arra_vy[0] is not the same with source")
-        self.assertEqual(mdsys.vz[0], -4.3352481732883966e-04,"The 1st value of arra_vz[0] is not the same with source")
-        self.assertEqual(mdsys.vx[108], -7.6107091738481837e-05,"The last value of arra_vx[0] is not the same with source")
-        self.assertEqual(mdsys.vy[108], 6.5742688995404971e-04,"The last value of arra_vy[0] is not the same with source")
-        self.assertEqual(mdsys.vz[108], -2.9040212591161766e-04,"The last value of arra_vz[0] is not the same with source")
-
-    def test_check_after_azzero(self):
-        """
-        """
-        pass
-
-
 
 if __name__ == '__main__':
     
