@@ -21,10 +21,10 @@
 #elif MORSE
 
 
-// #define FFAC() sys->epsilon*(1-exp(-1*sys->sigma*rr))*(1-exp(-1*sys->sigma*rr))
-// #define EPOT() -0.5*sys->epsilon*(1-exp(-1*sys->sigma*rr))*(sys->sigma*exp(-1*sys->sigma*rr))
-#define FFAC() 0
-#define EPOT() 0
+#define FFAC() sys->epsilon*(1-exp(-1*sys->sigma*rr))*(1-exp(-1*sys->sigma*rr))
+#define EPOT() -0.5*sys->epsilon*(1-exp(-1*sys->sigma*rr))*(sys->sigma*exp(-1*sys->sigma*rr))
+// #define FFAC() 0
+// #define EPOT() 0
 #define  C12() 0
 #define  C6() 0
 #define  RRC() sys->rcut

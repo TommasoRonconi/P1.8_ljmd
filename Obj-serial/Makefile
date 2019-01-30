@@ -4,7 +4,11 @@ SHELL=/bin/sh
 #####################################################################
 # Options:
 
+OOPT=-O3
+OPT = 
 OPT = -DTHIRD_LAW
+# POT_LJ = 
+# OOPT=-O3
 POT_LJ = -DLJ_LESS_MATH
 POT_MS = -DMORSE
 
@@ -23,7 +27,7 @@ dirEXE = $(dirR)
 exe_name-LJ = $(dirEXE)/ljmd-serial-LJ.x
 exe_name-MS = $(dirEXE)/ljmd-serial-MS.x
 
-CFLAGS0 = -std=c99 -Wall -Wextra -g -O3 -fomit-frame-pointer -ffast-math
+CFLAGS0 = -std=c99 -Wall -Wextra -g -fomit-frame-pointer -ffast-math $(OOPT)
 
 C_FLAGS = $(CFLAGS0) -I$(dirI) $(OPT)
 

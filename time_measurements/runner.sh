@@ -65,39 +65,38 @@ calculate_std()
 
 # Variable definitions --------------------------------
 DIR=./DATA
-DATA=${DIR}/time
-AVG_DATA=${DIR}/avg_time
-STD_DATA=${DIR}/std_time
-MERGE_DATA=${DIR}/avg_std_time
+SUFF=_serial_O0
+DATA=${DIR}/time${SUFF}
+AVG_DATA=${DIR}/avg_time${SUFF}
+STD_DATA=${DIR}/std_time${SUFF}
+MERGE_DATA=${DIR}/avg_std_time${SUFF}
 DAT=.dat
 RAW=.raw
-EXE=main.x
+EXE=../ljmd-serial-LJ.x  
 
-INNER_REPETIONS=1000
-REPETITIONS=10
-SIZES=`seq 100 1000 50100` 
-# Compiling ------------------------------------------
-make
+REPETITIONS=5
+# Modules ------------------------------------------
+module purge
+module load openmpi
 
 # Remove previous data ------------------------------
 rm ${DIR}/*.dat ${DIR}/*raw 2> /dev/null
 
 # Running --------------------------------------------
-for size in ${SIZES[*]}; do
-	for repetition in `seq 1 ${REPETITIONS}`; do
-		 ./${EXE} ${size} ${INNER_REPETIONS}\
-		 1>> ${DATA}_${size}${RAW}		
-	done
-
-		calculate_average ${DATA}_${size}${RAW} \
-						  ${AVG_DATA}${RAW}
-		calculate_std 	  ${DATA}_${size}${RAW} \
-					  	  ${STD_DATA}${RAW}
-		rm ${DATA}_${size}${RAW}
+for repetition in `seq 1 ${REPETITIONS}`; do
+	 /usr/bin/time -f "%e" ./${EXE} < argon_108.inp 
+	 1>> ${DATA}${RAW}		
 done
 
-paste 			  ${AVG_DATA}${RAW} ${STD_DATA}${RAW} \
-	  			  1>> ${MERGE_DATA}${DAT}
+	calculate_average ${DATA}${RAW} \
+					  ${AVG_DATA}${RAW}
+	calculate_std 	  ${DATA}${RAW} \
+				  	  ${STD_DATA}${RAW}
+
+	paste             ${AVG_DATA}${RAW} ${STD_DATA}${RAW} \
+                                  1>> ${MERGE_DATA}${DAT}
+
+	rm ${DATA}${RAW}
 
 rm 	${AVG_DATA}${RAW} ${STD_DATA}${RAW}
 
